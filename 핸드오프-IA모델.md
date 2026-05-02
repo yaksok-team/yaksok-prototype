@@ -219,6 +219,6 @@ SeniorTabs (Tab.Navigator)
 
 - [핸드오프-지식정리.md](핸드오프-지식정리.md) — Stage 0~4 (Figma 핸드오프 절차, Phase 3 보류 시 참조)
 - [핸드오프-지식정리2.md](핸드오프-지식정리2.md) — Path A vs B 분석, Phase 1·2·3 분기
-- [app/components/senior-screens.jsx](app/components/senior-screens.jsx) — 38 컴포넌트 정의
-- [app/index.html](app/index.html) — 현재 평면 8섹션 IA (Plan A에서 재배치)
+- [docs/components/senior-screens.jsx](docs/components/senior-screens.jsx) — 38 컴포넌트 정의
+- [docs/index.html](docs/index.html) — 현재 평면 8섹션 IA (Plan A에서 재배치)
 - [design-system/tokens.ts](design-system/tokens.ts) — RN 토큰 SSOT (Phase 1 #5에서 통합)
