@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  
+  <defs>
+    <linearGradient id="yk-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#5f3add"></stop>
+      <stop offset="100%" stop-color="#7857f8"></stop>
+    </linearGradient>
+    <linearGradient id="yk-grad-light" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ece6ff"></stop>
+      <stop offset="100%" stop-color="#d8ccff"></stop>
+    </linearGradient>
+  </defs>
+
+  
+  <g transform="rotate(-35 32 32)">
+    
+    <path d="M 10 21 H 32 V 43 H 10 A 11 11 0 0 1 10 21 Z" fill="url(#yk-grad)"></path>
+    
+    <path d="M 32 21 H 54 A 11 11 0 0 1 54 43 H 32 Z" fill="url(#yk-grad-light)"></path>
+    
+    <ellipse cx="20" cy="27" rx="6" ry="2" fill="#ffffff" opacity="0.22"></ellipse>
+  </g>
+</svg>

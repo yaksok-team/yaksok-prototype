@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>YakSok IA — 8 섹션 (박정숙 68세 약통 시스템)</title>
+<meta name="viewport" content="width=1480" />
+<link rel="stylesheet" href="assets/colors_and_type.css" />
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background:
+      radial-gradient(1200px 600px at 20% -5%, rgba(120,87,248,0.18) 0%, transparent 60%),
+      radial-gradient(1000px 500px at 90% 10%, rgba(216,204,255,0.5) 0%, transparent 60%),
+      var(--color-surface-low);
+    min-height: 100vh;
+    font-family: var(--font-body);
+    color: var(--color-on-surface);
+  }
+  .page { max-width: 1520px; margin: 0 auto; padding: 56px 48px 80px; }
+  .crumb { font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--color-on-surface-variant);
+    display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .crumb .dot { width: 7px; height: 7px; border-radius: 9999px; background: var(--color-primary); }
+  h1.title { font-size: 52px; line-height: 1.05; letter-spacing: -0.03em;
+    font-weight: 700; margin: 0 0 18px; }
+  h1.title em { font-style: normal;
+    background: linear-gradient(135deg, #5f3add 0%, #7857f8 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lede { font-size: 17px; line-height: 1.6;
+    color: var(--color-on-surface-variant); max-width: 640px; margin: 0 0 48px; }
+
+  .flow { margin-bottom: 64px; }
+  .flow-head { display: flex; align-items: center; gap: 18px; margin-bottom: 22px; }
+  .flow-num { width: 52px; height: 52px; border-radius: 16px;
+    background: var(--gradient-hero); color: #fff;
+    font-family: var(--font-display); font-weight: 700; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 12px 28px rgba(95,58,221,0.28); }
+  .flow-title { font-size: 26px; letter-spacing: -0.02em; margin: 0; line-height: 1.2; font-weight: 700; }
+  .flow-sub { font-size: 14px; color: var(--color-on-surface-variant);
+    margin: 4px 0 0; }
+
+  .screens { display: flex; align-items: stretch; gap: 0;
+    overflow-x: auto; padding: 12px 4px 28px; margin: 0 -4px; }
+  .screens::-webkit-scrollbar { height: 8px; }
+  .screens::-webkit-scrollbar-thumb { background: rgba(95,58,221,0.2); border-radius: 9999px; }
+  .step { flex-shrink: 0; display: flex; flex-direction: column;
+    align-items: stretch; width: 252px; }
+  .step .step-num { font-family: var(--font-display);
+    font-size: 12px; font-weight: 700; color: var(--color-primary);
+    letter-spacing: 0.08em; margin-bottom: 6px;
+    width: 100%; text-align: center; }
+  .step .step-title { font-size: 14px; font-weight: 700;
+    letter-spacing: -0.01em; margin-bottom: 4px;
+    width: 100%; text-align: center; }
+  .step .step-desc { font-size: 12px; line-height: 1.45;
+    color: var(--color-on-surface-variant);
+    width: 100%; text-align: center;
+    margin-bottom: 14px; min-height: 30px;
+    word-break: keep-all; }
+  /* frame-slot box matches scaled visual size (390×844 × 0.56). Inner Frame
+     stays 390×844 in JSX and gets transform-scaled to fit exactly. No negative
+     margin hack needed — layout box now equals visual box. */
+  .step .frame-slot { width: 218px; height: 473px; align-self: center; }
+  .step .frame-slot > * { transform: scale(0.56); transform-origin: top left; }
+
+  .arrow { flex-shrink: 0; width: 52px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 85px; /* step labels height — centers svg on frame in flex stretch row */
+    color: var(--color-primary); opacity: 0.45; }
+
+  .sub-label { font-size: 13px; font-weight: 700;
+    color: var(--color-on-surface-variant);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    margin: 24px 0 6px; padding-left: 4px;
+    display: flex; align-items: center; gap: 12px; }
+  .sub-label::before { content: ''; width: 22px; height: 2px;
+    background: var(--color-primary); border-radius: 9999px; }
+
+  /* Zone headers — large divider per IA zone (ENTRY / SENIOR / CAREGIVER / SYSTEM / EXPLORE) */
+  .zone-header { margin: 112px 0 40px; padding-top: 36px;
+    border-top: 2px solid rgba(95,58,221,0.18); }
+  .zone-header:first-of-type { margin-top: 0; padding-top: 0; border-top: 0; }
+  .zone-num { display: inline-block; padding: 5px 14px;
+    border-radius: 9999px; background: var(--gradient-hero);
+    color: #fff; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 14px; box-shadow: 0 8px 18px rgba(95,58,221,0.28); }
+  .zone-num.gray { background: var(--color-surface-container-high); color: var(--color-on-surface); box-shadow: none; }
+  .zone-num.blue { background: linear-gradient(135deg, #1f6feb 0%, #3f87f5 100%); }
+  .zone-num.dashed { background: transparent; color: var(--color-primary);
+    box-shadow: none; border: 1.5px dashed var(--color-primary); }
+  .zone-title { font-size: 34px; font-weight: 700;
+    letter-spacing: -0.02em; margin: 0 0 10px; line-height: 1.15; }
+  .zone-sub { font-size: 15px; color: var(--color-on-surface-variant);
+    margin: 0; line-height: 1.55; max-width: 720px; }
+
+  /* Tab sub-header — under SENIOR MAIN zone */
+  .tab-header { margin: 56px 0 18px;
+    display: flex; align-items: center; gap: 14px; }
+  .tab-icon { width: 40px; height: 40px; border-radius: 13px;
+    background: var(--color-primary-fixed); color: var(--color-primary);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; flex-shrink: 0; }
+  .tab-title { font-size: 24px; font-weight: 700;
+    letter-spacing: -0.015em; margin: 0; line-height: 1.2; }
+  .tab-sub { font-size: 14px; color: var(--color-on-surface-variant);
+    margin: 2px 0 0; }
+
+  .stub { padding: 28px 24px; border-radius: 22px;
+    background: var(--color-primary-fixed); color: var(--color-on-primary-fixed-variant);
+    font-size: 15px; line-height: 1.6; max-width: 720px;
+    box-shadow: var(--shadow-tinted-sm); }
+  .stub b { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="crumb"><span class="dot"></span> YakSok IA · 박정숙(68) — 약통 시스템</div>
+  <h1 class="title">4 zone, <em>tab-owned 트리</em></h1>
+  <p class="lede">
+    <a href="../핸드오프-IA모델.md">핸드오프-IA모델.md</a>의 zone × tab × type 트리에 맞춘 와이어프레임 배치.
+    오버레이는 자기 흐름이 사는 탭에 종속, 진짜 cross-cutting은 SYSTEM zone에 단 1개(잠금화면 푸시).
+    EXPLORE는 디자인 탐색용 — 본 IA에 영향 없음.
+  </p>
+
+  <!-- ====================== ZONE 1 · ENTRY ====================== -->
+  <div class="zone-header">
+    <div class="zone-num gray">Zone 1 · Entry</div>
+    <h2 class="zone-title">온보딩 (1회성 진입)</h2>
+    <p class="zone-sub">앱 첫 실행 1회만. 이후 SeniorTabs로 전환. <b>RN</b>: 별도 OnboardingStack, AsyncStorage flag로 완료 후 skip.</p>
+  </div>
+
+  <section class="flow"><div class="flow-head"><div class="flow-num">00</div>
+    <div><h2 class="flow-title">온보딩 8 화면</h2>
+    <p class="flow-sub">스플래시 → 환영 → 약관(시트) → 이름 → 만성질환 → 권한 → 준비 중(transient) → 시작</p></div></div>
+    <div class="screens" id="s_onboarding"></div></section>
+
+  <!-- ====================== ZONE 2 · SENIOR MAIN ====================== -->
+  <div class="zone-header">
+    <div class="zone-num">Zone 2 · Senior Main</div>
+    <h2 class="zone-title">시니어 메인 (박정숙)</h2>
+    <p class="zone-sub">3-tab 구성. 각 탭이 자기 page tree + 오버레이 owner. <b>RN</b>: <code>Tab.Navigator</code> wrapping 3개 <code>Stack.Navigator</code>.</p>
+  </div>
+
+  <!-- TAB 1 · 오늘 -->
+  <div class="tab-header">
+    <div class="tab-icon">🏠</div>
+    <div><h3 class="tab-title">Tab 1 · 오늘</h3>
+    <p class="tab-sub">매일 사용. 복용 체크 + 잔여 확인.</p></div>
+  </div>
+
+  <section class="flow"><div class="flow-head"><div class="flow-num">홈</div>
+    <div><h2 class="flow-title">복용 체크</h2>
+    <p class="flow-sub">진행 → 권고 강조 → Breathe(완료) → 일요일 잔여 확인(시트)</p></div></div>
+    <div class="screens" id="s_today_home"></div></section>
+
+  <!-- TAB 2 · 내 약 -->
+  <div class="tab-header">
+    <div class="tab-icon">💊</div>
+    <div><h3 class="tab-title">Tab 2 · 내 약</h3>
+    <p class="tab-sub">주간 사용. 약통 목록 + 캘린더 + 등록 흐름(16 화면, 모달·시트·로딩 혼재).</p></div>
+  </div>
+
+  <section class="flow"><div class="flow-head"><div class="flow-num">약통</div>
+    <div><h2 class="flow-title">통합 약통</h2>
+    <p class="flow-sub">종류별 통합 (처방약·일반의약품·영양제) + 목록↔달력 토글 + 성분 중복 뱃지 — PRD MVP #3</p></div></div>
+    <div class="sub-label">① 빈 상태 · 첫 사용</div>
+    <div class="screens" id="s_mymeds_cabinet_empty"></div>
+    <div class="sub-label">② 목록 view · 종류별 그룹</div>
+    <div class="screens" id="s_mymeds_cabinet_list"></div>
+    <div class="sub-label">③ 달력 view · 월 grid + streak (S_IntakeCalendar 흡수)</div>
+    <div class="screens" id="s_mymeds_cabinet_calendar"></div></section>
+
+  <section class="flow"><div class="flow-head"><div class="flow-num">등록</div>
+    <div><h2 class="flow-title">등록 (통합 16 화면)</h2>
+    <p class="flow-sub">공통 입구 → 메소드 가지(사진·검색·직접) → (영양제) 후속 → 공통 마무리</p></div></div>
+    <div class="sub-label">① 공통 진입 · 분기(모달) → 방식</div>
+    <div class="screens" id="s_mymeds_reg_entry"></div>
+    <div class="sub-label">② 사진 가지 · 촬영 → 추출 확인</div>
+    <div class="screens" id="s_mymeds_reg_photo"></div>
+    <div class="sub-label">③ 검색 가지 · 검색 → 확인(모달) → 체크 + FAB</div>
+    <div class="screens" id="s_mymeds_reg_search"></div>
+    <div class="sub-label">④ 직접 입력 가지 · 빈 폼 (S_Confirm 재사용)</div>
+    <div class="screens" id="s_mymeds_reg_manual"></div>
+    <div class="sub-label">⑤ 영양제 후속 · 선택 리스트 → 편집 → 시트 → 분석 → 결과(상호작용)</div>
+    <div class="screens" id="s_mymeds_reg_selected"></div>
+    <div class="sub-label">⑥ 공통 마무리 · 시간 → 권고 → 알림 미리보기</div>
+    <div class="screens" id="s_mymeds_reg_finish"></div></section>
+
+  <!-- TAB 3 · 내 정보 -->
+  <div class="tab-header">
+    <div class="tab-icon">👤</div>
+    <div><h3 class="tab-title">Tab 3 · 내 정보</h3>
+    <p class="tab-sub">간헐 사용. 마이페이지 hub + 가족 공유 + 상담 리포트.</p></div>
+  </div>
+
+  <section class="flow"><div class="flow-head"><div class="flow-num">마이</div>
+    <div><h2 class="flow-title">마이페이지 (준비 중)</h2>
+    <p class="flow-sub">프로필, 알림, 가족 관리, 데이터 내보내기 — hub</p></div></div>
+    <div class="stub" id="s_myinfo_mypage">
+      <b>내 정보 — 미구현.</b><br/>
+      프로필, 알림 설정, 가족 초대·관리, 데이터 내보내기. 일관된 IA를 위해 자리만 잡아둠.
+    </div></section>
+
+  <section class="flow"><div class="flow-head"><div class="flow-num">가족</div>
+    <div><h2 class="flow-title">가족 공유 설정</h2>
+    <p class="flow-sub">박정숙이 보는 공유 토글</p></div></div>
+    <div class="screens" id="s_myinfo_share"></div></section>
+
+  <section class="flow"><div class="flow-head"><div class="flow-num">리포트</div>
+    <div><h2 class="flow-title">상담 리포트</h2>
+    <p class="flow-sub">4주치 미리보기 + 보내기</p></div></div>
+    <div class="screens" id="s_myinfo_report"></div></section>
+
+  <!-- ====================== ZONE 3 · CAREGIVER ====================== -->
+  <div class="zone-header">
+    <div class="zone-num gray">Zone 3 · Caregiver</div>
+    <h2 class="zone-title">보호자 메인 (김민재)</h2>
+    <p class="zone-sub">별도 페르소나 모드. 메인과 분리된 navigation tree. <b>RN</b>: RootNavigator의 다른 mode 또는 App mode switch.</p>
+  </div>
+
+  <section class="flow"><div class="flow-head"><div class="flow-num">홈</div>
+    <div><h2 class="flow-title">보호자 홈</h2>
+    <p class="flow-sub">아들 김민재(42)가 보는 어머니 약속 — PRD MVP #7</p></div></div>
+    <div class="screens" id="s_caregiver_home"></div></section>
+
+  <!-- ====================== ZONE 4 · SYSTEM ====================== -->
+  <div class="zone-header">
+    <div class="zone-num blue">Zone 4 · System</div>
+    <h2 class="zone-title">OS 레벨 (탭 무관, 외부 컨텍스트)</h2>
+    <p class="zone-sub">탭 진입 전 / OS 잠금화면 / 푸시. 단 1 frame. <b>RN</b>: navigation tree 외부, Notifee/expo-notifications handler. tap → SeniorTabs/Today deep link.</p>
+  </div>
+
+  <section class="flow"><div class="flow-head"><div class="flow-num">푸시</div>
+    <div><h2 class="flow-title">잠금화면 푸시</h2>
+    <p class="flow-sub">저녁 약 알림 + 권고가 함께 — tap 시 오늘 탭 진입</p></div></div>
+    <div class="screens" id="s_system_push"></div></section>
+
+  <!-- ====================== EXPLORE ====================== -->
+  <div class="zone-header">
+    <div class="zone-num dashed">Explore</div>
+    <h2 class="zone-title">TabBar 디자인 후보</h2>
+    <p class="zone-sub">채택안 = 3-tab stroke icon. 워드마크 변형 / B 5-tab은 보존만 (참고용, 코드상 유지). <b>본 IA에 영향 없음.</b></p>
+  </div>
+
+  <section class="flow"><div class="flow-head"><div class="flow-num">채택</div>
+    <div><h2 class="flow-title">3-tab stroke icon ✓</h2>
+    <p class="flow-sub">home / pill / user 굵은 stroke 아이콘. 각 탭 active 모습.</p></div></div>
+    <div class="screens" id="explore_adopted"></div></section>
+
+  <section class="flow"><div class="flow-head"><div class="flow-num" style="background: var(--color-surface-container-high); color: var(--color-on-surface); box-shadow: none;">보존</div>
+    <div><h2 class="flow-title">3-tab 워드마크 변형 (참고용)</h2>
+    <p class="flow-sub">'늘'·'약'·'나' PNG 워드마크. 추후 비교 재검토 가능성 대비, 코드 보존.</p></div></div>
+    <div class="screens" id="explore_wordmark"></div></section>
+
+  <section class="flow"><div class="flow-head"><div class="flow-num" style="background: var(--color-surface-container-high); color: var(--color-on-surface); box-shadow: none;">보존</div>
+    <div><h2 class="flow-title">B (5-tab + 약 FAB) (참고용)</h2>
+    <p class="flow-sub">초기 5-slot 안. 시니어 터치 영역 충돌로 탈락, 코드 보존만.</p></div></div>
+    <div class="screens" id="explore_b"></div></section>
+
+</div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="components/senior-screens.jsx"></script>
+
+<script type="text/babel">
+function Frame({ children, time = '9:41' }) {
+  return (
+    <div style={{ width: 390, height: 844, borderRadius: 54,
+      background: '#0d0a1a', padding: 12,
+      boxShadow: '0 30px 80px rgba(95,58,221,0.18), 0 8px 24px rgba(17,24,39,0.08)' }}>
+      <div style={{ width: '100%', height: '100%', borderRadius: 42,
+        overflow: 'hidden', background: '#fff', position: 'relative' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 44,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 30px', fontSize: 15, fontWeight: 700, color: '#111827',
+          zIndex: 100, pointerEvents: 'none' }}>
+          <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{time}</span>
+          <span style={{ fontSize: 13 }}>●●● ▮</span>
+        </div>
+        <div style={{ position: 'absolute', top: 8, left: '50%',
+          transform: 'translateX(-50%)', width: 110, height: 30,
+          borderRadius: 9999, background: '#0d0a1a', zIndex: 101 }} />
+        <div style={{ position: 'absolute', top: 44, left: 0, right: 0, bottom: 0 }}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Step({ n, title, desc, time, comp }) {
+  return (
+    <div className="step">
+      <div className="step-num">STEP {n}</div>
+      <div className="step-title">{title}</div>
+      <div className="step-desc">{desc}</div>
+      <div className="frame-slot">
+        <Frame time={time}>{React.createElement(comp)}</Frame>
+      </div>
+    </div>
+  );
+}
+
+function Arrow() {
+  return <div className="arrow"><svg width="40" height="20" viewBox="0 0 40 20" fill="none">
+    <path d="M2 10h34M30 4l6 6-6 6" stroke="currentColor" strokeWidth="2.4"
+      strokeLinecap="round" strokeLinejoin="round" /></svg></div>;
+}
+
+function Row({ steps }) {
+  return <>{steps.map((s, i) => (
+    <React.Fragment key={i}>
+      <Step n={i + 1} {...s} />
+      {i < steps.length - 1 && <Arrow />}
+    </React.Fragment>
+  ))}</>;
+}
+
+const Y = window.YS;
+
+const flows = {
+  // ZONE 1 · ENTRY
+  s_onboarding: [
+    { title: '스플래시',  desc: '브랜드 인상',          time: '9:40', comp: Y.S_Splash },
+    { title: '시작하기',   desc: '조합 가치 + 로그인',     time: '9:40', comp: Y.S_Welcome },
+    { title: '약관 동의',  desc: '민감정보 강조 (시트)', time: '9:40', comp: Y.S_Terms },
+    { title: '이름',      desc: '"불러드릴까요"',       time: '9:41', comp: Y.S_ProfileName },
+    { title: '만성질환',   desc: 'PRD 우선 3종 + 기타',  time: '9:41', comp: Y.S_ProfileChronic },
+    { title: '권한',      desc: '알림 + 카메라',        time: '9:42', comp: Y.S_PermissionsCare },
+    { title: '준비 중',    desc: '약통 생성 로딩 (transient)',       time: '9:42', comp: Y.S_OnboardingLoading },
+    { title: '시작',      desc: '첫 약 등록 CTA',       time: '9:43', comp: Y.S_OnboardingDone },
+  ],
+
+  // ZONE 2 · SENIOR MAIN — Tab 1 · 오늘
+  s_today_home: [
+    { title: '오늘 — 진행 중', desc: '저녁이 "지금"',         time: '18:56',
+      comp: () => <Y.S_Today checked={false} /> },
+    { title: '권고 강조',     desc: '약사 권고 큰 카드',     time: '18:57',
+      comp: () => <Y.S_Today checked={false} focus="notice" /> },
+    { title: '완료 — Breathe', desc: '민트로 페이드',         time: '19:01',
+      comp: () => <Y.S_Today checked={true} /> },
+    { title: '일요일 잔여 확인', desc: '큰 +/− 버튼 (시트)',  time: '20:00', comp: Y.S_StockCheck },
+  ],
+
+  // ZONE 2 · SENIOR MAIN — Tab 2 · 내 약
+  s_mymeds_cabinet_empty: [
+    { title: 'Empty',     desc: '첫 사용 · 등록 0개',  time: '9:50',
+      comp: () => <Y.S_Cabinet empty={true} /> },
+  ],
+  s_mymeds_cabinet_list: [
+    { title: '목록 view',  desc: '종류별 그룹 + 중복 뱃지', time: '11:30',
+      comp: () => <Y.S_Cabinet mode="list" /> },
+  ],
+  s_mymeds_cabinet_calendar: [
+    { title: '달력 view',  desc: '월 grid + 5일 streak',  time: '19:05',
+      comp: () => <Y.S_Cabinet mode="calendar" /> },
+  ],
+  s_mymeds_reg_entry: [
+    { title: '분기',      desc: '영양제 / 복용의약품 (모달)',  time: '9:40', comp: Y.S_AddType },
+    { title: '등록 방식', desc: '사진·검색·직접 입력', time: '9:41', comp: Y.S_AddChoice },
+  ],
+  s_mymeds_reg_photo: [
+    { title: '촬영',      desc: '큰 가이드 사각형', time: '9:42', comp: Y.S_Camera },
+    { title: '추출 확인', desc: '터치로 수정',      time: '9:43', comp: Y.S_Confirm },
+  ],
+  s_mymeds_reg_search: [
+    { title: '검색',       desc: '최근 검색 + 큰 카드',           time: '14:18', comp: Y.S_Search },
+    { title: '확인 팝업',  desc: '"찾으시는 영양제가 맞나요?" (모달)', time: '14:18', comp: Y.S_SearchConfirm },
+    { title: '체크 + FAB', desc: '오메가-3 알티지 ✓, 우하단 1', time: '14:19', comp: Y.S_SearchAdded },
+  ],
+  s_mymeds_reg_manual: [
+    { title: '직접 입력', desc: 'S_Confirm 재사용 (빈 상태)', time: '9:43', comp: Y.S_Confirm },
+  ],
+  s_mymeds_reg_selected: [
+    { title: '빈 상태',         desc: '아직 선택 없음',          time: '14:20', comp: Y.S_SelectedEmpty },
+    { title: '리스트',          desc: '제품 3종 + 다음',          time: '14:21', comp: Y.S_SelectedList },
+    { title: '섭취량 편집',     desc: '토글 ON · dose pill',      time: '14:21', comp: Y.S_SelectedEdit },
+    { title: '섭취량 시트',     desc: '0.5 / 1(권장) / 1.5 (시트)',     time: '14:22', comp: Y.S_DoseSheet },
+    { title: '분석 중',         desc: '약과 궁합 확인 (transient)',          time: '14:23', comp: Y.S_AnalyzeLoading },
+    { title: '결과 (상호작용)', desc: '상담 권장 톤',            time: '14:24', comp: Y.S_Result },
+  ],
+  s_mymeds_reg_finish: [
+    { title: '시간 정하기',     desc: '아침/점심/저녁 컬러 구분', time: '9:44',  comp: Y.S_Schedule },
+    { title: '권고사항 입력',   desc: '음성 입력 보조',           time: '9:45',  comp: Y.S_AddNote },
+    { title: '알림 미리보기',   desc: '저녁 알림에 권고 함께',    time: '19:00', comp: Y.S_DoseNotice },
+  ],
+
+  // ZONE 2 · SENIOR MAIN — Tab 3 · 내 정보
+  s_myinfo_share: [
+    { title: '공유 설정', desc: '쉬운 토글', time: '20:14', comp: Y.S_ShareSetup },
+  ],
+  s_myinfo_report: [
+    { title: '리포트', desc: '미리보기 + 보내기', time: '08:50', comp: Y.S_Report },
+  ],
+
+  // ZONE 3 · CAREGIVER
+  s_caregiver_home: [
+    { title: '오늘 한눈에', desc: '복용 · 재고 · 권고', time: '14:22', comp: Y.S_CaregiverHome },
+  ],
+
+  // ZONE 4 · SYSTEM
+  s_system_push: [
+    { title: '잠금화면 푸시',     desc: '권고가 함께',           time: '18:55', comp: Y.S_DosePush },
+  ],
+
+  // EXPLORE — 채택안 (3-tab stroke icon)
+  explore_adopted: [
+    { title: '오늘 active',     desc: 'home stroke icon',     time: '·', comp: Y.S_TabBar3IconToday },
+    { title: '내 약 active',    desc: 'pill stroke icon',     time: '·', comp: Y.S_TabBar3IconYak },
+    { title: '내 정보 active',  desc: 'user stroke icon',     time: '·', comp: Y.S_TabBar3IconMe },
+  ],
+  // EXPLORE — 보존 워드마크 변형
+  explore_wordmark: [
+    { title: '오늘(늘) active',    desc: '워드마크 PNG',     time: '·', comp: Y.S_TabBar3 },
+    { title: '내 약(약) active',   desc: '워드마크 PNG',     time: '·', comp: Y.S_TabBar3Active },
+    { title: '내 정보(나) active', desc: '워드마크 PNG',     time: '·', comp: Y.S_TabBar3MeActive },
+  ],
+  // EXPLORE — 보존 B 5-tab
+  explore_b: [
+    { title: 'B안 (5-tab)', desc: '약 FAB · 5-slot', time: '·', comp: Y.S_TabBarB },
+  ],
+};
+
+Object.entries(flows).forEach(([id, steps]) => {
+  const root = document.getElementById(id);
+  if (root) ReactDOM.createRoot(root).render(<Row steps={steps} />);
+});
+</script>
+</body>
+</html>

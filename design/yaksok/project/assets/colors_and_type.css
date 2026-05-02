@@ -1,0 +1,197 @@
+/* ==========================================================================
+   약속(YakSok) Design Tokens
+   "The Ethereal Guardian" — Violet-rooted, atmospheric, clinically warm.
+   ========================================================================== */
+
+/* ---- Webfonts ------------------------------------------------------------
+   Pretendard (KR) → 한글 본문/UI (CDN)
+   Inter (EN)      → 영문 본문/UI (brand-hosted variable)
+   Plus Jakarta Sans → Display 숫자, 시각, "boutique" 느낌 (brand-hosted variable)
+   --------------------------------------------------------------------------- */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ========== 1. COLOR — VIOLET CORE ===================================== */
+  /* Primary scale (violet) */
+  --color-primary:               #5f3add; /* Brand anchor */
+  --color-primary-container:     #7857f8; /* Gradient companion / subtle fill */
+  --color-on-primary:             #ffffff;
+  --color-on-primary-container:   #ffffff;
+  --color-primary-fixed:         #ece6ff; /* Light tint for secondary buttons */
+  --color-primary-fixed-dim:     #d8ccff;
+  --color-on-primary-fixed-variant: #311b92;
+
+  /* ========== 2. SURFACE — TONAL HIERARCHY ============================== */
+  /* "No-Line" rule: structure via tonal shifts, never 1px borders */
+  --color-surface-lowest:        #ffffff; /* Floating cards, "active" dose */
+  --color-surface:               #fafafa; /* Default app surface */
+  --color-surface-low:           #f3f3f3; /* App canvas base */
+  --color-surface-container:     #ededed; /* Subtle group fill */
+  --color-surface-container-high:#e8e8e8; /* Recessed (progress track) */
+  --color-surface-container-highest:#e0e0e0;
+
+  --color-on-surface:            #111827; /* Ink Black — never #000 */
+  --color-on-surface-variant:    #4b5563; /* Charcoal — metadata */
+  --color-on-surface-faint:      #9ca3af; /* Tertiary text */
+
+  /* Ghost border — only for accessibility, max 15% */
+  --color-outline-variant:       rgba(17, 24, 39, 0.08);
+
+  /* ========== 3. SEMANTIC — SAFETY TONES ================================ */
+  --color-safe:                  #34d399; /* Safe Mint — dose taken / OK */
+  --color-safe-container:        #d1fae5;
+  --color-on-safe:               #064e3b;
+
+  --color-warning:               #f59e0b; /* Amber — mild interaction */
+  --color-warning-container:     #fef3c7;
+  --color-on-warning:            #78350f;
+
+  --color-danger:                #ef4444; /* Red — severe interaction */
+  --color-danger-container:      #fee2e2;
+  --color-on-danger:             #7f1d1d;
+
+  --color-info:                  #3b82f6;
+  --color-info-container:        #dbeafe;
+  --color-on-info:               #1e3a8a;
+
+  /* ========== 4. SIGNATURE GRADIENTS ==================================== */
+  --gradient-hero: linear-gradient(135deg, #5f3add 0%, #7857f8 100%);
+  --gradient-soft: linear-gradient(180deg, #ece6ff 0%, #fafafa 100%);
+  --gradient-glow: radial-gradient(circle at 50% 0%, rgba(120, 87, 248, 0.18) 0%, transparent 60%);
+
+  /* ========== 5. ELEVATION — AMBIENT SOFTNESS =========================== */
+  /* No "software-like" drops. Tinted glow + tonal layering. */
+  --shadow-tinted-sm: 0 2px 8px rgba(95, 58, 221, 0.06);
+  --shadow-tinted-md: 0 8px 24px rgba(95, 58, 221, 0.08);
+  --shadow-tinted-lg: 0 16px 48px rgba(95, 58, 221, 0.12);
+  --shadow-glass:     0 4px 24px rgba(17, 24, 39, 0.06);
+
+  /* Glassmorphism — bottom tab bar */
+  --glass-bg:     rgba(255, 255, 255, 0.7);
+  --glass-blur:   blur(20px);
+
+  /* ========== 6. RADII — PILL / CLOUD =================================== */
+  --radius-sm:    0.5rem;   /*  8px — tags, chips */
+  --radius-md:    0.875rem; /* 14px — small cards, inputs */
+  --radius-lg:    1rem;     /* 16px — DEFAULT card radius */
+  --radius-xl:    1.5rem;   /* 24px — sheet / modal */
+  --radius-2xl:   2rem;     /* 32px — hero blocks */
+  --radius-full:  9999px;   /* Pill — ALL buttons */
+
+  /* ========== 7. SPACING — EDITORIAL BREATHING ========================== */
+  --space-1:      0.35rem;  /*  ~6px */
+  --space-2:      0.7rem;   /* ~11px */
+  --space-3:      1.05rem;  /* ~17px */
+  --space-4:      1.4rem;   /* ~22px — gap between cards */
+  --space-5:      1.7rem;   /* ~27px — card inner padding */
+  --space-6:      2.1rem;   /* ~34px */
+  --space-xl:     3rem;     /* 48px — page margin (editorial) */
+
+  /* ========== 8. TYPOGRAPHY — BASE ====================================== */
+  --font-body:    'Pretendard', 'Inter', system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Pretendard', sans-serif;
+  --font-mono:    'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+
+  /* Type scale (mobile-first) */
+  --text-display: 3rem;       /* 48px — clock, big numerals */
+  --text-h1:      2rem;       /* 32px — Headline-LG, page header */
+  --text-h2:      1.5rem;     /* 24px */
+  --text-h3:      1.25rem;    /* 20px */
+  --text-title:   1.125rem;   /* 18px — Title-MD, medicine names */
+  --text-body:    1rem;       /* 16px */
+  --text-sm:      0.875rem;   /* 14px */
+  --text-label:   0.6875rem;  /* 11px — Label-SM, metadata */
+
+  /* Tight letter-spacing for headlines */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide:  0.06em;
+
+  --leading-tight: 1.2;
+  --leading-snug:  1.35;
+  --leading-normal:1.55;
+
+  /* ========== 9. MOTION — "BREATHE" ===================================== */
+  --ease-fluid:  cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-soft:   cubic-bezier(0.32, 0.72, 0, 1);
+  --duration-fast:   180ms;
+  --duration-base:   300ms;
+  --duration-slow:   480ms;
+}
+
+/* ==========================================================================
+   SEMANTIC ELEMENTS — base type styles (drop-in)
+   ========================================================================== */
+
+html, body {
+  font-family: var(--font-body);
+  color: var(--color-on-surface);
+  background: var(--color-surface-low);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'ss01', 'ss03', 'cv01';
+}
+
+h1, .h1 {
+  font-size: var(--text-h1);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  color: var(--color-on-surface);
+}
+
+h2, .h2 {
+  font-size: var(--text-h2);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  color: var(--color-on-surface);
+}
+
+h3, .h3 {
+  font-size: var(--text-h3);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-snug);
+}
+
+.title-md, .medicine-name {
+  font-size: var(--text-title);
+  font-weight: 700;
+  line-height: var(--leading-snug);
+  color: var(--color-on-surface);
+}
+
+p, .body {
+  font-size: var(--text-body);
+  font-weight: 400;
+  line-height: var(--leading-normal);
+  color: var(--color-on-surface);
+}
+
+.body-sm {
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--color-on-surface-variant);
+}
+
+.label-sm, .meta {
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant);
+}
+
+.display, .numeral {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  font-feature-settings: 'tnum';
+}
+
+code, .mono {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
