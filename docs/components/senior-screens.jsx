@@ -973,7 +973,11 @@ const S_DoseSheet = () => (
   </Shell>
 );
 
-const S_AnalyzeLoading = () => (
+const S_AnalyzeLoading = ({ kind = "supp" }) => {
+  const headline = kind === "med"
+    ? ["기존에 드시는 약·영양제와", "궁합을 확인 중이에요.."]
+    : ["박정숙님의 영양제를", "약과 궁합 확인중.."];
+  return (
   <Shell>
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center', gap: 40,
@@ -989,11 +993,12 @@ const S_AnalyzeLoading = () => (
       </div>
       <div style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.4,
         textAlign: 'center', color: TC.ink, lineHeight: 1.4 }}>
-        박정숙님의 영양제를<br/>약과 궁합 확인중..
+        {headline[0]}<br/>{headline[1]}
       </div>
     </div>
   </Shell>
-);
+  );
+};
 
 const S_AddChoice = () => (
   <Shell>
@@ -1008,9 +1013,9 @@ const S_AddChoice = () => (
           lineHeight: 1.2,
         }}
       >
-        지금 드시는 약을
+        지금 드시는 약과
         <br />
-        알려주세요
+        영양제를 알려주세요
       </h2>
       <p
         style={{
@@ -1020,7 +1025,7 @@ const S_AddChoice = () => (
           margin: 0,
         }}
       >
-        사진 한 장이면 충분해요
+        사진이나 이름으로 빠르게 찾을 수 있어요
       </p>
     </div>
     <div
@@ -1174,23 +1179,24 @@ const S_Camera = () => (
           >
             <div
               style={{
-                fontSize: 12,
-                color: "#5a4b2e",
-                fontWeight: 700,
-                marginBottom: 8,
+                fontSize: 13,
+                color: "#3a2f1f",
+                fontWeight: 800,
+                marginBottom: 2,
+                letterSpacing: -0.2,
               }}
             >
-              OO약국 처방
+              사랑내과 처방
             </div>
             <div
               style={{
-                fontSize: 15,
-                color: "#3a2f1f",
-                fontWeight: 700,
-                marginBottom: 12,
+                fontSize: 11,
+                color: "#5a4b2e",
+                fontWeight: 600,
+                marginBottom: 10,
               }}
             >
-              박정숙 님 · 5/2
+              OO약국 조제 · 5/2 · 박정숙 님
             </div>
             <div
               style={{
@@ -1282,88 +1288,172 @@ const S_Camera = () => (
 const S_Confirm = () => (
   <Shell>
     <TopBar title="확인" left="←" />
-    <div style={{ padding: "0 24px 16px" }}>
+    <div style={{ padding: "0 24px 12px" }}>
       <Pill tone="primary" big>
         <Ic name="sparkle" size={16} /> 약 3개를 찾았어요
       </Pill>
       <p
         style={{
-          fontSize: 18,
+          fontSize: 17,
           color: TC.inkVariant,
-          marginTop: 14,
-          lineHeight: 1.5,
-          margin: "14px 0 0",
+          marginTop: 12,
+          lineHeight: 1.45,
+          margin: "12px 0 0",
         }}
       >
-        잘못된 부분이 있으면
-        <br />
-        눌러서 고쳐주세요
+        잘못된 부분이 있으면 눌러서 고쳐주세요
       </p>
     </div>
+
     <div
       style={{
         padding: "8px 24px",
-        display: "flex",
-        flexDirection: "column",
-        gap: 12,
         flex: 1,
         overflow: "auto",
       }}
     >
-      {[
-        { name: "메트포르민", dose: "500 mg" },
-        { name: "아토르바스타틴", dose: "10 mg" },
-        { name: "아스피린", dose: "100 mg" },
-      ].map((m, i) => (
-        <Card key={i} style={{ padding: "18px 20px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+      <Card style={{ padding: 0, overflow: "hidden" }}>
+        <div
+          style={{
+            background: TC.primaryFixed,
+            padding: "14px 16px",
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+          }}
+        >
+          <div
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 12,
+              background: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <Ic name="doc" size={22} color={TC.primary} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div
               style={{
-                width: 52,
-                height: 52,
-                borderRadius: 14,
+                fontSize: 18,
+                fontWeight: 800,
+                color: TC.ink,
+                letterSpacing: -0.2,
+              }}
+            >
+              사랑내과 처방
+            </div>
+            <div
+              style={{
+                fontSize: 14,
+                color: TC.onPrimaryVar,
+                marginTop: 2,
+                fontWeight: 600,
+              }}
+            >
+              OO약국 조제 · 5월 2일 · 박○숙 님 · 약 3가지
+            </div>
+          </div>
+        </div>
+
+        {[
+          { name: "메트포르민", dose: "500 mg", route: "1정 · 1일 2회 · 30일분", when: "식후 30분" },
+          { name: "아토르바스타틴", dose: "10 mg", route: "1정 · 1일 1회 · 30일분", when: "취침 전" },
+          { name: "아스피린", dose: "100 mg", route: "1정 · 1일 1회 · 30일분", when: "식후" },
+        ].map((m, i) => (
+          <div
+            key={i}
+            style={{
+              padding: "14px 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: 14,
+              borderTop: `1px solid ${TC.outline}`,
+            }}
+          >
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 12,
                 background: TC.primaryFixed,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                flexShrink: 0,
               }}
             >
-              <Ic name="pill" size={26} color={TC.primary} />
+              <Ic name="pill" size={22} color={TC.primary} />
             </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 2 }}>
-                {m.name}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ marginBottom: 4 }}>
+                <span style={{ fontSize: 20, fontWeight: 700, color: TC.ink, letterSpacing: -0.2 }}>
+                  {m.name}
+                </span>{" "}
+                <span style={{ fontSize: 14, color: TC.inkVariant, fontWeight: 600 }}>
+                  {m.dose}
+                </span>
               </div>
-              <div style={{ fontSize: 17, color: TC.inkVariant }}>{m.dose}</div>
+              <div style={{ fontSize: 13, color: TC.inkVariant, marginBottom: 6 }}>
+                {m.route}
+              </div>
+              <Pill tone="warning">{m.when}</Pill>
             </div>
-            <Ic name="chev" size={24} color={TC.inkFaint} />
+            <Ic name="chev" size={20} color={TC.inkFaint} />
           </div>
-        </Card>
-      ))}
+        ))}
+      </Card>
     </div>
-    <div style={{ padding: "14px 24px 24px" }}>
+
+    <div style={{ padding: "12px 24px 22px" }}>
       <BigButton>3개 모두 추가하기</BigButton>
     </div>
   </Shell>
 );
 
-const S_Schedule = () => (
+const S_Schedule = ({ kind = "med" }) => {
+  const isSupp = kind === "supp";
+  const headline = isSupp ? "언제 드세요?" : "알림 시간을 정해주세요";
+  const sub = isSupp
+    ? "카드를 눌러 시간이나 요일을 바꿀 수 있어요"
+    : "카드를 눌러 시간이나 요일을 바꿀 수 있어요";
+  const contextLabel = isSupp ? "영양제 1가지" : "사랑내과 처방 · 약 3가지";
+  const dayLabel = isSupp ? "매일" : "매일 (5/2 ~ 5/30 · 30일분)";
+  return (
   <Shell>
     <TopBar title="시간 정하기" left="←" />
-    <div style={{ padding: "0 24px 18px" }}>
+    <div style={{ padding: "0 24px 12px" }}>
+      <span
+        style={{
+          display: "inline-block",
+          fontSize: 13,
+          fontWeight: 700,
+          color: TC.primary,
+          background: TC.primaryFixed,
+          padding: "4px 10px",
+          borderRadius: 9999,
+          marginBottom: 10,
+        }}
+      >
+        {contextLabel}
+      </span>
       <h2
         style={{
           fontSize: 26,
           fontWeight: 700,
           letterSpacing: -0.4,
-          margin: "0 0 8px",
+          margin: "0 0 6px",
           lineHeight: 1.25,
         }}
       >
-        언제 드세요?
+        {headline}
       </h2>
-      <p style={{ fontSize: 17, color: TC.inkVariant, margin: 0 }}>
-        시간을 눌러 켜거나 꺼주세요
+      <p style={{ fontSize: 17, color: TC.inkVariant, margin: 0, lineHeight: 1.5 }}>
+        {sub}
       </p>
     </div>
     <div
@@ -1375,32 +1465,46 @@ const S_Schedule = () => (
         flex: 1,
       }}
     >
-      {[
-        {
-          lbl: "아침",
-          icon: "sun",
-          time: "오전 8:30",
-          on: true,
-          tone: "morning",
-          items: ["메트포르민"],
-        },
-        {
-          lbl: "점심",
-          icon: "noon",
-          time: "오후 12:30",
-          on: true,
-          tone: "noon",
-          items: ["메트포르민"],
-        },
-        {
-          lbl: "저녁",
-          icon: "moon",
-          time: "오후 7:00",
-          on: true,
-          tone: "evening",
-          items: ["메트포르민", "아토르바스타틴", "아스피린"],
-        },
-      ].map((t, i) => {
+      <Card style={{ padding: "16px 18px", cursor: "pointer" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 12,
+              background: TC.primaryFixed,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <Ic name="cal" size={22} color={TC.primary} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: TC.inkFaint, marginBottom: 2 }}>
+              섭취 요일
+            </div>
+            <div style={{ fontSize: 19, fontWeight: 700, color: TC.ink, letterSpacing: -0.2 }}>
+              {dayLabel}
+            </div>
+          </div>
+          <Ic name="chev" size={20} color={TC.inkFaint} strokeWidth={2.5} />
+        </div>
+      </Card>
+
+      {(isSupp
+        ? [
+            { lbl: "아침", icon: "sun",  time: "오전 8:30",  on: false, tone: "morning", items: [] },
+            { lbl: "점심", icon: "noon", time: "오후 12:30", on: false, tone: "noon",    items: [] },
+            { lbl: "저녁", icon: "moon", time: "오후 7:00",  on: true,  tone: "evening", items: ["오메가-3"] },
+          ]
+        : [
+            { lbl: "아침", icon: "sun",  time: "오전 8:30",  on: true, tone: "morning", items: ["메트포르민"] },
+            { lbl: "점심", icon: "noon", time: "오후 12:30", on: true, tone: "noon",    items: ["메트포르민"] },
+            { lbl: "저녁", icon: "moon", time: "오후 7:00",  on: true, tone: "evening", items: ["메트포르민", "아토르바스타틴", "아스피린"] },
+          ]
+      ).map((t, i) => {
         const colorMap = {
           morning: { bg: TC.morningBg, ink: TC.morningInk, dot: TC.morning },
           noon: { bg: TC.noonBg, ink: TC.noonInk, dot: TC.noon },
@@ -1414,6 +1518,7 @@ const S_Schedule = () => (
               padding: "18px 20px",
               background: t.on ? TC.surfaceLowest : TC.surfaceContainer,
               boxShadow: t.on ? TC.shadow : "none",
+              cursor: "pointer",
             }}
           >
             <div
@@ -1450,14 +1555,23 @@ const S_Schedule = () => (
                 </div>
                 <div
                   style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    marginTop: 2,
                     fontSize: 22,
                     fontWeight: 700,
                     fontVariantNumeric: "tabular-nums",
                     color: t.on ? col.ink : TC.inkFaint,
-                    marginTop: 2,
                   }}
                 >
                   {t.time}
+                  <Ic
+                    name="chev"
+                    size={16}
+                    color={t.on ? col.ink : TC.inkFaint}
+                    strokeWidth={2.5}
+                  />
                 </div>
               </div>
               <div
@@ -1504,7 +1618,338 @@ const S_Schedule = () => (
       <BigButton>완료</BigButton>
     </div>
   </Shell>
-);
+  );
+};
+
+// =============================================================
+// S_TimeSheet — 시간 picker 바텀시트 (wheel 스타일)
+// S_Schedule 시간 카드 탭 시 노출. backdrop으로 Schedule 화면 보임
+// =============================================================
+
+const S_TimeSheet = ({ kind = "med", slot = "아침" }) => {
+  const slotMap = {
+    아침: { hour: 8,  min: 30, ampm: "오전", recommend: "아침 식후 30분", tone: "morning" },
+    점심: { hour: 12, min: 30, ampm: "오후", recommend: "점심 식후 30분", tone: "noon" },
+    저녁: { hour: 7,  min: 0,  ampm: "오후", recommend: "저녁 식후 30분", tone: "evening" },
+  };
+  const cfg = slotMap[slot];
+  const colMap = {
+    morning: { bg: TC.morningBg, ink: TC.morningInk },
+    noon:    { bg: TC.noonBg,    ink: TC.noonInk    },
+    evening: { bg: TC.eveningBg, ink: TC.eveningInk },
+  };
+  const col = colMap[cfg.tone];
+
+  const Wheel = ({ values, current }) => {
+    const idx = values.indexOf(current);
+    const range = values.slice(Math.max(0, idx - 2), Math.min(values.length, idx + 3));
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 4,
+          minWidth: 56,
+          fontVariantNumeric: "tabular-nums",
+        }}
+      >
+        {range.map((v, i) => {
+          const dist = Math.abs(range.indexOf(current) - i);
+          const opacity = dist === 0 ? 1 : dist === 1 ? 0.45 : 0.18;
+          const fontSize = dist === 0 ? 30 : 22;
+          const fontWeight = dist === 0 ? 700 : 600;
+          return (
+            <div
+              key={i}
+              style={{
+                opacity,
+                fontSize,
+                fontWeight,
+                color: TC.ink,
+                lineHeight: 1.2,
+              }}
+            >
+              {typeof v === "number" ? String(v).padStart(2, "0") : v}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  return (
+    <React.Fragment>
+      <div style={{ position: "absolute", inset: 0 }}>
+        <S_Schedule kind={kind} />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "rgba(17,24,39,0.22)",
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxHeight: "80%",
+            background: TC.surfaceLowest,
+            borderTopLeftRadius: 28,
+            borderTopRightRadius: 28,
+            boxShadow: "0 -10px 40px rgba(17,24,39,0.18)",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
+        >
+          <div style={{ padding: "10px 0 6px", display: "flex", justifyContent: "center" }}>
+            <div
+              style={{
+                width: 40,
+                height: 5,
+                borderRadius: 9999,
+                background: TC.surfaceContainerHigh,
+              }}
+            />
+          </div>
+
+          <div style={{ padding: "8px 24px 18px" }}>
+            <h3
+              style={{
+                fontSize: 22,
+                fontWeight: 700,
+                margin: "0 0 10px",
+                letterSpacing: -0.3,
+                color: TC.ink,
+              }}
+            >
+              {slot} 시간 정하기
+            </h3>
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "6px 12px",
+                borderRadius: 9999,
+                background: col.bg,
+                color: col.ink,
+                fontSize: 14,
+                fontWeight: 700,
+              }}
+            >
+              추천 섭취 시간 · {cfg.recommend}
+            </span>
+          </div>
+
+          <div
+            style={{
+              padding: "8px 24px 16px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 14,
+              background: TC.surfaceLow,
+              borderTop: `1px solid ${TC.outline}`,
+              borderBottom: `1px solid ${TC.outline}`,
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                left: 16,
+                right: 16,
+                top: "50%",
+                transform: "translateY(-50%)",
+                height: 56,
+                borderRadius: 14,
+                background: TC.primaryFixed,
+                pointerEvents: "none",
+              }}
+            />
+            <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 14 }}>
+              <Wheel values={[6, 7, 8, 9, 10, 11, 12]} current={cfg.hour} />
+              <span style={{ fontSize: 28, fontWeight: 700, color: TC.ink }}>:</span>
+              <Wheel values={[0, 15, 30, 45]} current={cfg.min} />
+              <Wheel values={["오전", "오후"]} current={cfg.ampm} />
+            </div>
+          </div>
+
+          <div
+            style={{
+              padding: "16px 24px calc(20px + env(safe-area-inset-bottom))",
+              display: "flex",
+              gap: 10,
+            }}
+          >
+            <BigButton variant="soft" style={{ flex: 1 }}>
+              취소
+            </BigButton>
+            <BigButton variant="solid" style={{ flex: 1.4 }}>
+              확인
+            </BigButton>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+};
+
+// =============================================================
+// S_DaySheet — 섭취 요일 바텀시트 (매일/평일/격일/사용자 정의)
+// S_Schedule "섭취 요일" row 탭 시 노출. backdrop으로 Schedule 화면 보임
+// =============================================================
+
+const S_DaySheet = ({ kind = "med" }) => {
+  const days = ["월", "화", "수", "목", "금", "토", "일"];
+  const presets = [
+    { label: "매일", active: true },
+    { label: "평일", active: false },
+    { label: "격일", active: false },
+    { label: "주말", active: false },
+  ];
+  const selectedDays = ["월", "화", "수", "목", "금", "토", "일"];
+
+  return (
+    <React.Fragment>
+      <div style={{ position: "absolute", inset: 0 }}>
+        <S_Schedule kind={kind} />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "rgba(17,24,39,0.22)",
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxHeight: "70%",
+            background: TC.surfaceLowest,
+            borderTopLeftRadius: 28,
+            borderTopRightRadius: 28,
+            boxShadow: "0 -10px 40px rgba(17,24,39,0.18)",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
+        >
+          <div style={{ padding: "10px 0 6px", display: "flex", justifyContent: "center" }}>
+            <div
+              style={{
+                width: 40,
+                height: 5,
+                borderRadius: 9999,
+                background: TC.surfaceContainerHigh,
+              }}
+            />
+          </div>
+
+          <div style={{ padding: "6px 24px 18px" }}>
+            <h3
+              style={{
+                fontSize: 22,
+                fontWeight: 700,
+                margin: "0 0 6px",
+                letterSpacing: -0.3,
+                color: TC.ink,
+              }}
+            >
+              섭취 요일
+            </h3>
+            <p style={{ fontSize: 15, color: TC.inkVariant, margin: 0, lineHeight: 1.5 }}>
+              {kind === "med"
+                ? "처방 기간 동안 매일 알려드릴게요. 격일 복용이면 바꿔주세요."
+                : "원하시는 요일을 골라주세요. 격일 복용도 가능해요."}
+            </p>
+          </div>
+
+          <div style={{ padding: "0 24px 14px" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: TC.inkFaint, marginBottom: 8 }}>
+              자주 쓰는 설정
+            </div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {presets.map((p, i) => (
+                <span
+                  key={i}
+                  style={{
+                    padding: "10px 16px",
+                    borderRadius: 9999,
+                    background: p.active ? TC.primary : TC.surfaceContainer,
+                    color: p.active ? "#fff" : TC.ink,
+                    fontSize: 16,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  {p.label}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ padding: "8px 24px 4px" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: TC.inkFaint, marginBottom: 10 }}>
+              요일 직접 선택
+            </div>
+            <div style={{ display: "flex", gap: 6, justifyContent: "space-between" }}>
+              {days.map((d, i) => {
+                const on = selectedDays.includes(d);
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      flex: 1,
+                      height: 52,
+                      borderRadius: 14,
+                      background: on ? TC.primary : TC.surfaceLowest,
+                      border: on ? "none" : `1.5px solid ${TC.outline}`,
+                      color: on ? "#fff" : TC.inkFaint,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 18,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {d}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div style={{ flex: 1 }} />
+
+          <div
+            style={{
+              padding: "16px 24px calc(20px + env(safe-area-inset-bottom))",
+              display: "flex",
+              gap: 10,
+            }}
+          >
+            <BigButton variant="soft" style={{ flex: 1 }}>
+              취소
+            </BigButton>
+            <BigButton variant="solid" style={{ flex: 1.4 }}>
+              확인
+            </BigButton>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+};
 
 // =============================================================
 // FLOW 2 — 영양제 추가 (조합 확인)
@@ -1755,33 +2200,47 @@ const S_SearchAdded = () => (
   </Shell>
 );
 
-const S_Result = () => (
+const S_Result = ({ kind = "supp" }) => {
+  const isMed = kind === "med";
+  return (
   <Shell>
     <TopBar title="확인 결과" left="←" />
     <div style={{ padding: "0 22px 18px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        <div
-          style={{
-            width: 56,
-            height: 56,
-            borderRadius: 16,
-            background: "linear-gradient(135deg, #ffe7c2, #ffc888)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 12,
-            fontWeight: 700,
-            color: "#7a4a1a",
-          }}
-        >
-          GNM
-        </div>
-        <div>
-          <div style={{ fontSize: 21, fontWeight: 700 }}>오메가-3 알티지</div>
-          <div style={{ fontSize: 16, color: TC.inkVariant, marginTop: 2 }}>
-            EPA+DHA 600mg · 1일 1회
-          </div>
-        </div>
+        {isMed ? (
+          <React.Fragment>
+            <div style={{
+              width: 56, height: 56, borderRadius: 16,
+              background: TC.primaryFixed,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <Ic name="doc" size={26} color={TC.primary} />
+            </div>
+            <div>
+              <div style={{ fontSize: 21, fontWeight: 700 }}>사랑내과 처방</div>
+              <div style={{ fontSize: 16, color: TC.inkVariant, marginTop: 2 }}>
+                약 3가지 · 5월 2일
+              </div>
+            </div>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <div style={{
+              width: 56, height: 56, borderRadius: 16,
+              background: "linear-gradient(135deg, #ffe7c2, #ffc888)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 12, fontWeight: 700, color: "#7a4a1a",
+            }}>
+              GNM
+            </div>
+            <div>
+              <div style={{ fontSize: 21, fontWeight: 700 }}>오메가-3 알티지</div>
+              <div style={{ fontSize: 16, color: TC.inkVariant, marginTop: 2 }}>
+                EPA+DHA 600mg · 1일 1회
+              </div>
+            </div>
+          </React.Fragment>
+        )}
       </div>
     </div>
     <div
@@ -1794,6 +2253,39 @@ const S_Result = () => (
         gap: 14,
       }}
     >
+      {isMed ? (
+        <React.Fragment>
+          <div style={{
+            padding: 22, borderRadius: 22,
+            background: TC.warningBg, color: TC.onWarning,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+              <Ic name="alert" size={26} color={TC.onWarning} />
+              <span style={{ fontSize: 18, fontWeight: 700 }}>복용 시점 주의</span>
+            </div>
+            <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 8, letterSpacing: -0.3 }}>
+              메트포르민 + 식사
+            </div>
+            <p style={{ fontSize: 17, lineHeight: 1.55, opacity: 0.92, margin: 0 }}>
+              빈속에 드시면 속이 불편할 수 있어요.<br/>
+              <b>식사 직후에 드시는 게 좋아요.</b>
+            </p>
+          </div>
+          <div style={{
+            padding: 22, borderRadius: 22,
+            background: TC.safeBg, color: TC.onSafe,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+              <Ic name="check-c" size={26} color={TC.onSafe} />
+              <span style={{ fontSize: 18, fontWeight: 700 }}>큰 충돌은 없어요</span>
+            </div>
+            <p style={{ fontSize: 16, lineHeight: 1.55, margin: 0 }}>
+              처방하신 3가지 약은 함께 드셔도 괜찮아요.<br/>
+              정해진 시간만 잘 지키시면 돼요.
+            </p>
+          </div>
+        </React.Fragment>
+      ) : (
       <div
         style={{
           padding: 22,
@@ -1833,7 +2325,9 @@ const S_Result = () => (
           <b>약사님과 한 번 상의해 주세요.</b>
         </p>
       </div>
+      )}
 
+      {!isMed && (
       <div
         style={{
           padding: 22,
@@ -1896,6 +2390,7 @@ const S_Result = () => (
           하루 권장 한도(2,000 IU) 안이에요
         </div>
       </div>
+      )}
 
       <div
         style={{
@@ -1925,137 +2420,255 @@ const S_Result = () => (
       </BigButton>
     </div>
   </Shell>
-);
+  );
+};
 
 // =============================================================
 // FLOW 3 — 권고사항 등록
 // =============================================================
 
-const S_AddNote = () => (
+const S_AddNote = ({ kind = "recommendation" }) => {
+  const isMemo = kind === "memo";
+  const headline = isMemo
+    ? ["이 영양제에 대해", "메모하실래요?"]
+    : ["약사님이 뭐라고", "하셨나요?"];
+  const sub = isMemo
+    ? "복용할 때 다시 보여드릴게요"
+    : "복용 시간에 다시 보여드릴게요";
+  const sample = isMemo
+    ? "비타민D는 햇볕 좋은 날엔 안 먹어도 된다고 했어|"
+    : "어지러우면 약사에게 알려달라고 하셨어요|";
+  return (
+    <Shell>
+      <div style={{ height: 80, background: TC.surfaceLow }} />
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: TC.surfaceLowest,
+          borderRadius: "28px 28px 0 0",
+          boxShadow: "0 -20px 56px rgba(95,58,221,0.18)",
+          padding: "16px 24px 28px",
+          maxHeight: "90%",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div
+          style={{
+            width: 44,
+            height: 5,
+            borderRadius: 9999,
+            background: TC.surfaceContainerHigh,
+            margin: "0 auto 18px",
+          }}
+        />
+        <h3
+          style={{
+            fontSize: 26,
+            fontWeight: 700,
+            letterSpacing: -0.4,
+            margin: "0 0 8px",
+            lineHeight: 1.25,
+          }}
+        >
+          {headline[0]}
+          <br />
+          {headline[1]}
+        </h3>
+        <p
+          style={{
+            fontSize: 17,
+            color: TC.inkVariant,
+            margin: "0 0 22px",
+            lineHeight: 1.5,
+          }}
+        >
+          {sub}
+        </p>
+
+        <div
+          style={{
+            padding: "20px 22px",
+            borderRadius: 18,
+            background: TC.surfaceLow,
+            fontSize: 21,
+            color: TC.ink,
+            marginBottom: 22,
+            minHeight: 110,
+            lineHeight: 1.5,
+            border: `2px solid ${TC.primary}`,
+            boxShadow: "0 0 0 5px rgba(95,58,221,0.14)",
+            fontWeight: 500,
+          }}
+        >
+          {sample}
+        </div>
+
+        <button
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            width: "100%",
+            padding: "16px",
+            borderRadius: 9999,
+            background: TC.primaryFixed,
+            color: TC.primary,
+            border: "none",
+            fontFamily: "inherit",
+            fontSize: 17,
+            fontWeight: 700,
+            marginBottom: 22,
+            cursor: "pointer",
+          }}
+        >
+          <Ic name="mic" size={22} color={TC.primary} />
+          말로 입력하기
+        </button>
+
+        {!isMemo && (
+          <React.Fragment>
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 700,
+                letterSpacing: 0.05,
+                color: TC.inkVariant,
+                marginBottom: 10,
+                textTransform: "uppercase",
+              }}
+            >
+              누가 하신 말씀
+            </div>
+            <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
+              {["약사", "의사", "직접"].map((t, i) => (
+                <div
+                  key={i}
+                  style={{
+                    flex: 1,
+                    padding: "14px",
+                    borderRadius: 9999,
+                    background: i === 0 ? TC.primary : TC.surfaceContainer,
+                    color: i === 0 ? "#fff" : TC.ink,
+                    fontSize: 18,
+                    fontWeight: 700,
+                    textAlign: "center",
+                  }}
+                >
+                  {t}
+                </div>
+              ))}
+            </div>
+          </React.Fragment>
+        )}
+
+        {isMemo && (
+          <div
+            style={{
+              padding: "12px 16px",
+              borderRadius: 14,
+              background: TC.surfaceLow,
+              fontSize: 14,
+              color: TC.inkFaint,
+              marginBottom: 24,
+              lineHeight: 1.5,
+            }}
+          >
+            메모는 본인만 볼 수 있어요. 의료인 권고는 약 등록에서 입력해 주세요.
+          </div>
+        )}
+
+        <BigButton>저장</BigButton>
+      </div>
+    </Shell>
+  );
+};
+
+// =============================================================
+// S_RegDone — 등록 완료 화면 (등록 flow 마지막 step)
+// =============================================================
+
+const S_RegDone = () => (
   <Shell>
-    <div style={{ height: 80, background: TC.surfaceLow }} />
     <div
       style={{
         position: "absolute",
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: TC.surfaceLowest,
-        borderRadius: "28px 28px 0 0",
-        boxShadow: "0 -20px 56px rgba(95,58,221,0.18)",
-        padding: "16px 24px 28px",
-        maxHeight: "90%",
+        inset: 0,
+        background:
+          "radial-gradient(circle at 50% 30%, rgba(120,87,248,0.22) 0%, transparent 65%)",
+        pointerEvents: "none",
+      }}
+    />
+    <div
+      style={{
+        flex: 1,
         display: "flex",
         flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "0 28px",
+        position: "relative",
+        zIndex: 1,
+        gap: 24,
       }}
     >
       <div
         style={{
-          width: 44,
-          height: 5,
+          width: 132,
+          height: 132,
           borderRadius: 9999,
-          background: TC.surfaceContainerHigh,
-          margin: "0 auto 18px",
-        }}
-      />
-      <h3
-        style={{
-          fontSize: 26,
-          fontWeight: 700,
-          letterSpacing: -0.4,
-          margin: "0 0 8px",
-          lineHeight: 1.25,
-        }}
-      >
-        약사님이 뭐라고
-        <br />
-        하셨나요?
-      </h3>
-      <p
-        style={{
-          fontSize: 17,
-          color: TC.inkVariant,
-          margin: "0 0 22px",
-          lineHeight: 1.5,
-        }}
-      >
-        복용 시간에 다시 보여드릴게요
-      </p>
-
-      <div
-        style={{
-          padding: "20px 22px",
-          borderRadius: 18,
-          background: TC.surfaceLow,
-          fontSize: 21,
-          color: TC.ink,
-          marginBottom: 22,
-          minHeight: 110,
-          lineHeight: 1.5,
-          border: `2px solid ${TC.primary}`,
-          boxShadow: "0 0 0 5px rgba(95,58,221,0.14)",
-          fontWeight: 500,
-        }}
-      >
-        어지러우면 약사에게 알려달라고 하셨어요|
-      </div>
-
-      <button
-        style={{
+          background: TC.gradientHero,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          gap: 10,
-          width: "100%",
-          padding: "16px",
-          borderRadius: 9999,
-          background: TC.primaryFixed,
-          color: TC.primary,
-          border: "none",
-          fontFamily: "inherit",
-          fontSize: 17,
-          fontWeight: 700,
-          marginBottom: 22,
-          cursor: "pointer",
+          boxShadow: "0 18px 48px rgba(95,58,221,0.32)",
         }}
       >
-        <Ic name="mic" size={22} color={TC.primary} />
-        말로 입력하기
-      </button>
-
-      <div
-        style={{
-          fontSize: 14,
-          fontWeight: 700,
-          letterSpacing: 0.05,
-          color: TC.inkVariant,
-          marginBottom: 10,
-          textTransform: "uppercase",
-        }}
-      >
-        누가 하신 말씀
+        <Ic name="check" size={64} color="#fff" strokeWidth={3.2} />
       </div>
-      <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
-        {["약사", "의사", "직접"].map((t, i) => (
-          <div
-            key={i}
-            style={{
-              flex: 1,
-              padding: "14px",
-              borderRadius: 9999,
-              background: i === 0 ? TC.primary : TC.surfaceContainer,
-              color: i === 0 ? "#fff" : TC.ink,
-              fontSize: 18,
-              fontWeight: 700,
-              textAlign: "center",
-            }}
-          >
-            {t}
-          </div>
-        ))}
+      <div style={{ textAlign: "center" }}>
+        <h2
+          style={{
+            fontSize: 30,
+            fontWeight: 700,
+            letterSpacing: -0.5,
+            margin: "0 0 12px",
+            lineHeight: 1.2,
+            color: TC.ink,
+          }}
+        >
+          저장이 완료됐어요
+        </h2>
+        <p
+          style={{
+            fontSize: 19,
+            color: TC.inkVariant,
+            lineHeight: 1.55,
+            margin: 0,
+          }}
+        >
+          오늘 약속에서 바로<br />드시면 돼요
+        </p>
       </div>
-
-      <BigButton>저장</BigButton>
+    </div>
+    <div
+      style={{
+        padding: "12px 24px 28px",
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        position: "relative",
+        zIndex: 1,
+      }}
+    >
+      <BigButton variant="solid">오늘 약속 보러 가기</BigButton>
+      <BigButton variant="ghost" style={{ minHeight: 56 }}>
+        약통 둘러보기
+      </BigButton>
     </div>
   </Shell>
 );
@@ -3841,26 +4454,42 @@ const S_RxDetail = () => {
   );
 
   return (
-    <div style={{
-      position: 'absolute', inset: 0,
-      background: 'rgba(17,24,39,0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '40px 16px',
-    }}>
+    <React.Fragment>
+      <div style={{ position: 'absolute', inset: 0 }}>
+        <S_Cabinet />
+      </div>
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'rgba(17,24,39,0.22)',
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+      }}>
       <div style={{
         width: '100%',
-        maxHeight: '90%',
+        maxHeight: '92%',
         background: TC.surfaceLowest,
-        borderRadius: 28,
-        boxShadow: '0 20px 60px rgba(17,24,39,0.3)',
+        borderTopLeftRadius: 28,
+        borderTopRightRadius: 28,
+        boxShadow: '0 -10px 40px rgba(17,24,39,0.18)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
       }}>
         <div style={{
-          padding: '20px 22px 16px',
+          padding: '10px 0 6px',
+          display: 'flex',
+          justifyContent: 'center',
+          flexShrink: 0,
+        }}>
+          <div style={{
+            width: 40, height: 5, borderRadius: 9999,
+            background: TC.surfaceContainerHigh,
+          }} />
+        </div>
+
+        <div style={{
+          padding: '6px 22px 14px',
           display: 'flex',
           alignItems: 'flex-start',
           gap: 12,
@@ -3927,7 +4556,7 @@ const S_RxDetail = () => {
 
         <div style={{
           borderTop: `1px solid ${TC.outline}`,
-          padding: '14px 22px',
+          padding: '14px 22px calc(14px + env(safe-area-inset-bottom))',
           display: 'flex',
           gap: 10,
           background: TC.surfaceLow,
@@ -3959,6 +4588,7 @@ const S_RxDetail = () => {
         </div>
       </div>
     </div>
+    </React.Fragment>
   );
 };
 
@@ -4000,21 +4630,36 @@ const S_RxEdit = () => {
   };
 
   return (
-    <div style={{
-      position: 'absolute', inset: 0,
-      background: 'rgba(17,24,39,0.5)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '40px 16px',
-    }}>
+    <React.Fragment>
+      <div style={{ position: 'absolute', inset: 0 }}>
+        <S_RxDetail />
+      </div>
       <div style={{
-        width: '100%', maxHeight: '90%',
+        position: 'absolute', inset: 0,
+        background: 'rgba(17,24,39,0.22)',
+        display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+      }}>
+      <div style={{
+        width: '100%', maxHeight: '92%',
         background: TC.surfaceLowest,
-        borderRadius: 28,
-        boxShadow: '0 20px 60px rgba(17,24,39,0.3)',
+        borderTopLeftRadius: 28,
+        borderTopRightRadius: 28,
+        boxShadow: '0 -10px 40px rgba(17,24,39,0.18)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         <div style={{
-          padding: '20px 22px 16px',
+          padding: '10px 0 6px',
+          display: 'flex', justifyContent: 'center',
+          flexShrink: 0,
+        }}>
+          <div style={{
+            width: 40, height: 5, borderRadius: 9999,
+            background: TC.surfaceContainerHigh,
+          }} />
+        </div>
+
+        <div style={{
+          padding: '6px 22px 14px',
           display: 'flex', alignItems: 'center', gap: 12,
           borderBottom: `1px solid ${TC.outline}`,
         }}>
@@ -4108,7 +4753,7 @@ const S_RxEdit = () => {
 
         <div style={{
           borderTop: `1px solid ${TC.outline}`,
-          padding: '14px 22px',
+          padding: '14px 22px calc(14px + env(safe-area-inset-bottom))',
           display: 'flex', gap: 10,
           background: TC.surfaceLow,
         }}>
@@ -4117,6 +4762,7 @@ const S_RxEdit = () => {
         </div>
       </div>
     </div>
+    </React.Fragment>
   );
 };
 
@@ -4235,44 +4881,6 @@ const _DemoBody = ({ tag, title, sub }) => (
       양쪽 4탭(오늘 · 캘린더 · 약통 · 내 정보)은 동일.
     </div>
   </div>
-);
-
-const _CenterFAB = ({ children, label }) => (
-  <div style={{ display: "flex", flexDirection: "column",
-    alignItems: "center", gap: 5 }}>
-    <div style={{ width: 64, height: 64, borderRadius: 9999,
-      background: TC.gradientHero,
-      display: "flex", alignItems: "center", justifyContent: "center",
-      boxShadow: "0 8px 18px rgba(95,58,221,0.42)" }}>
-      {children}
-    </div>
-    <span style={{ fontSize: 14, fontWeight: 700, color: TC.primary }}>
-      {label}
-    </span>
-  </div>
-);
-
-const S_TabBarB = () => (
-  <Shell>
-    <_DemoBody
-      tag="B안"
-      title="‘약’ 로고 + ‘등록’ 라벨"
-      sub="브랜드 워드마크(약) 재사용. ‘약을 등록한다’는 의미를 한글 자체로 전달."
-    />
-    <_NavBar>
-      <_NavTab icon="home" label="오늘" active />
-      <_NavTab icon="cal" label="캘린더" />
-      <_CenterFAB label="등록">
-        <img
-          src="assets/logo-yaksok-yak.png"
-          alt="약"
-          style={{ width: 42, height: 'auto', display: 'block' }}
-        />
-      </_CenterFAB>
-      <_NavTab icon="pill" label="약통" />
-      <_NavTab icon="user" label="내 정보" />
-    </_NavBar>
-  </Shell>
 );
 
 const _WordmarkTab = ({ src, label, active = false }) => {
@@ -5675,6 +6283,8 @@ window.YS = {
   S_Camera,
   S_Confirm,
   S_Schedule,
+  S_TimeSheet,
+  S_DaySheet,
   S_Search,
   S_SearchAdded,
   S_SearchConfirm,
@@ -5686,6 +6296,7 @@ window.YS = {
   S_Result,
   S_AddNote,
   S_DoseNotice,
+  S_RegDone,
   S_DosePush,
   S_Today,
   S_Cabinet,
@@ -5697,7 +6308,6 @@ window.YS = {
   S_ShareSetup,
   S_CaregiverHome,
   S_Report,
-  S_TabBarB,
   S_TabBar3,
   S_TabBar3Active,
   S_TabBar3MeActive,

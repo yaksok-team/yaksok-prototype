@@ -14,3 +14,4 @@ desktop.ini
 node_modules/
 .claude/
 .omc/
+.agents/

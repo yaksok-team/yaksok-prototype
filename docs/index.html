@@ -165,24 +165,16 @@
 
   <section class="flow"><div class="flow-head"><div class="flow-num">약통</div>
     <div><h2 class="flow-title">통합 약통</h2>
-    <p class="flow-sub">빈 상태 → 목록(처방 supercard) → 처방 상세 → 수정 / 삭제(모달)</p></div></div>
+    <p class="flow-sub">빈 상태 → 목록(처방 supercard) → 처방 상세·수정(시트) / 삭제(모달)</p></div></div>
     <div class="screens" id="s_mymeds_cabinet"></div></section>
 
   <section class="flow"><div class="flow-head"><div class="flow-num">등록</div>
-    <div><h2 class="flow-title">등록 (통합 16 화면)</h2>
-    <p class="flow-sub">공통 입구 → 메소드 가지(사진·검색·직접) → (영양제) 후속 → 공통 마무리</p></div></div>
-    <div class="sub-label">① 공통 진입 · 분기(모달) → 방식</div>
-    <div class="screens" id="s_mymeds_reg_entry"></div>
-    <div class="sub-label">② 사진 가지 · 촬영 → 추출 확인</div>
-    <div class="screens" id="s_mymeds_reg_photo"></div>
-    <div class="sub-label">③ 검색 가지 · 검색 → 확인(모달) → 체크 + FAB</div>
-    <div class="screens" id="s_mymeds_reg_search"></div>
-    <div class="sub-label">④ 직접 입력 가지 · 빈 폼 (S_Confirm 재사용)</div>
-    <div class="screens" id="s_mymeds_reg_manual"></div>
-    <div class="sub-label">⑤ 영양제 후속 · 선택 리스트 → 편집 → 시트 → 분석 → 결과(상호작용)</div>
-    <div class="screens" id="s_mymeds_reg_selected"></div>
-    <div class="sub-label">⑥ 공통 마무리 · 시간 → 권고 → 알림 미리보기</div>
-    <div class="screens" id="s_mymeds_reg_finish"></div></section>
+    <div><h2 class="flow-title">등록 시나리오</h2>
+    <p class="flow-sub">시나리오별 직선 흐름 (화면 일부 겹침 허용 — 분기 단순화)</p></div></div>
+    <div class="sub-label">① 약 등록 (처방약·일반의약품) — 진입 → 사진 → 추출 확인 → 시간 → 알림</div>
+    <div class="screens" id="s_mymeds_reg_med"></div>
+    <div class="sub-label">② 영양제 등록 — 진입 → 검색 → 확인 → 선택·편집 → 분석 → 권고 → 메모 → 알림</div>
+    <div class="screens" id="s_mymeds_reg_supp"></div></section>
 
   <!-- TAB 3 · 내 정보 -->
   <div class="tab-header">
@@ -199,27 +191,10 @@
       프로필, 알림 설정, 가족 초대·관리, 데이터 내보내기. 일관된 IA를 위해 자리만 잡아둠.
     </div></section>
 
-  <section class="flow"><div class="flow-head"><div class="flow-num">가족</div>
-    <div><h2 class="flow-title">가족 공유 설정</h2>
-    <p class="flow-sub">박정숙이 보는 공유 토글</p></div></div>
-    <div class="screens" id="s_myinfo_share"></div></section>
-
-  <section class="flow"><div class="flow-head"><div class="flow-num">리포트</div>
-    <div><h2 class="flow-title">상담 리포트</h2>
-    <p class="flow-sub">4주치 미리보기 + 보내기</p></div></div>
-    <div class="screens" id="s_myinfo_report"></div></section>
-
-  <!-- ====================== ZONE 3 · CAREGIVER ====================== -->
-  <div class="zone-header">
-    <div class="zone-num gray">Zone 3 · Caregiver</div>
-    <h2 class="zone-title">보호자 메인 (김민재)</h2>
-    <p class="zone-sub">별도 페르소나 모드. 메인과 분리된 navigation tree. <b>RN</b>: RootNavigator의 다른 mode 또는 App mode switch.</p>
-  </div>
-
-  <section class="flow"><div class="flow-head"><div class="flow-num">홈</div>
-    <div><h2 class="flow-title">보호자 홈</h2>
-    <p class="flow-sub">아들 김민재(42)가 보는 어머니 약속 — PRD MVP #7</p></div></div>
-    <div class="screens" id="s_caregiver_home"></div></section>
+  <section class="flow"><div class="flow-head"><div class="flow-num">기타</div>
+    <div><h2 class="flow-title">공유 · 리포트 · 보호자</h2>
+    <p class="flow-sub">단일 화면 모음 — 가족 공유(시니어) → 상담 리포트(시니어) → 보호자 홈(김민재 별도 모드)</p></div></div>
+    <div class="screens" id="s_compact_misc"></div></section>
 
   <!-- ====================== ZONE 4 · SYSTEM ====================== -->
   <div class="zone-header">
@@ -237,7 +212,7 @@
   <div class="zone-header">
     <div class="zone-num dashed">Explore</div>
     <h2 class="zone-title">TabBar 디자인 후보</h2>
-    <p class="zone-sub">채택안 = 3-tab stroke icon. 워드마크 변형 / B 5-tab은 보존만 (참고용, 코드상 유지). <b>본 IA에 영향 없음.</b></p>
+    <p class="zone-sub">채택안 = 3-tab stroke icon. 워드마크 변형은 보존만 (참고용, 코드상 유지). <b>본 IA에 영향 없음.</b></p>
   </div>
 
   <section class="flow"><div class="flow-head"><div class="flow-num">채택</div>
@@ -250,10 +225,6 @@
     <p class="flow-sub">'늘'·'약'·'나' PNG 워드마크. 추후 비교 재검토 가능성 대비, 코드 보존.</p></div></div>
     <div class="screens" id="explore_wordmark"></div></section>
 
-  <section class="flow"><div class="flow-head"><div class="flow-num" style="background: var(--color-surface-container-high); color: var(--color-on-surface); box-shadow: none;">보존</div>
-    <div><h2 class="flow-title">B (5-tab + 약 FAB) (참고용)</h2>
-    <p class="flow-sub">초기 5-slot 안. 시니어 터치 영역 충돌로 탈락, 코드 보존만.</p></div></div>
-    <div class="screens" id="explore_b"></div></section>
 
 </div>
 
@@ -351,54 +322,51 @@ const flows = {
       comp: () => <Y.S_Cabinet empty={true} /> },
     { title: '목록 view',         desc: '처방 supercard + 종류별 그룹', time: '11:30',
       comp: Y.S_Cabinet },
-    { title: '처방 상세 (모달)',  desc: '5월 10일 사랑내과 풀 정보',     time: '11:31',
+    { title: '처방 상세 (시트)',  desc: 'iOS 바텀시트 — 5월 10일 사랑내과', time: '11:31',
       comp: Y.S_RxDetail },
-    { title: '처방 수정 (모달)',  desc: '필드 입력 — 약 추가/시간 토글', time: '11:32',
+    { title: '처방 수정 (시트)',  desc: 'iOS 바텀시트 — 필드 입력·시간 토글', time: '11:32',
       comp: Y.S_RxEdit },
     { title: '처방 삭제 (모달)',  desc: '확인 alert — 되돌릴 수 없음',   time: '11:33',
       comp: Y.S_RxDelete },
   ],
-  s_mymeds_reg_entry: [
-    { title: '분기',      desc: '영양제 / 복용의약품 (모달)',  time: '9:40', comp: Y.S_AddType },
-    { title: '등록 방식', desc: '사진·검색·직접 입력', time: '9:41', comp: Y.S_AddChoice },
+  s_mymeds_reg_med: [
+    { title: '분기 (모달)',      desc: '영양제 / 복용의약품',         time: '9:40', comp: Y.S_AddType },
+    { title: '등록 방식',        desc: '사진·검색·직접 입력 (공통)',  time: '9:41', comp: Y.S_AddChoice },
+    { title: '촬영',             desc: '큰 가이드 사각형',             time: '9:42', comp: Y.S_Camera },
+    { title: '추출 확인',        desc: '병원·조제일·약 list',          time: '9:43', comp: Y.S_Confirm },
+    { title: '분석 중',          desc: '약 간 상호작용 확인 (transient)', time: '9:44', comp: () => <Y.S_AnalyzeLoading kind="med" /> },
+    { title: '결과',             desc: '처방약 상호작용·상담 권장',    time: '9:45', comp: () => <Y.S_Result kind="med" /> },
+    { title: '시간 정하기',      desc: '처방 알림 시간 (3가지 약)',    time: '9:46', comp: () => <Y.S_Schedule kind="med" /> },
+    { title: '시간 변경 (시트)', desc: '아침 시간 — wheel picker',     time: '9:46', comp: () => <Y.S_TimeSheet kind="med" slot="아침" /> },
+    { title: '요일 변경 (시트)', desc: '약봉지 30일분 — 매일 default', time: '9:46', comp: () => <Y.S_DaySheet kind="med" /> },
+    { title: '권고사항 입력',    desc: '약사·의사 권고 (음성 보조)',   time: '9:47', comp: () => <Y.S_AddNote kind="recommendation" /> },
+    { title: '등록 완료',        desc: '저장 완료 — 오늘 약속·약통 진입', time: '9:48', comp: Y.S_RegDone },
   ],
-  s_mymeds_reg_photo: [
-    { title: '촬영',      desc: '큰 가이드 사각형', time: '9:42', comp: Y.S_Camera },
-    { title: '추출 확인', desc: '터치로 수정',      time: '9:43', comp: Y.S_Confirm },
-  ],
-  s_mymeds_reg_search: [
-    { title: '검색',       desc: '최근 검색 + 큰 카드',           time: '14:18', comp: Y.S_Search },
-    { title: '확인 팝업',  desc: '"찾으시는 영양제가 맞나요?" (모달)', time: '14:18', comp: Y.S_SearchConfirm },
-    { title: '체크 + FAB', desc: '오메가-3 알티지 ✓, 우하단 1', time: '14:19', comp: Y.S_SearchAdded },
-  ],
-  s_mymeds_reg_manual: [
-    { title: '직접 입력', desc: 'S_Confirm 재사용 (빈 상태)', time: '9:43', comp: Y.S_Confirm },
-  ],
-  s_mymeds_reg_selected: [
-    { title: '빈 상태',         desc: '아직 선택 없음',          time: '14:20', comp: Y.S_SelectedEmpty },
-    { title: '리스트',          desc: '제품 3종 + 다음',          time: '14:21', comp: Y.S_SelectedList },
-    { title: '섭취량 편집',     desc: '토글 ON · dose pill',      time: '14:21', comp: Y.S_SelectedEdit },
-    { title: '섭취량 시트',     desc: '0.5 / 1(권장) / 1.5 (시트)',     time: '14:22', comp: Y.S_DoseSheet },
-    { title: '분석 중',         desc: '약과 궁합 확인 (transient)',          time: '14:23', comp: Y.S_AnalyzeLoading },
-    { title: '결과 (상호작용)', desc: '상담 권장 톤',            time: '14:24', comp: Y.S_Result },
-  ],
-  s_mymeds_reg_finish: [
-    { title: '시간 정하기',     desc: '아침/점심/저녁 컬러 구분', time: '9:44',  comp: Y.S_Schedule },
-    { title: '권고사항 입력',   desc: '음성 입력 보조',           time: '9:45',  comp: Y.S_AddNote },
-    { title: '알림 미리보기',   desc: '저녁 알림에 권고 함께',    time: '19:00', comp: Y.S_DoseNotice },
-  ],
-
-  // ZONE 2 · SENIOR MAIN — Tab 3 · 내 정보
-  s_myinfo_share: [
-    { title: '공유 설정', desc: '쉬운 토글', time: '20:14', comp: Y.S_ShareSetup },
-  ],
-  s_myinfo_report: [
-    { title: '리포트', desc: '미리보기 + 보내기', time: '08:50', comp: Y.S_Report },
+  s_mymeds_reg_supp: [
+    { title: '분기 (모달)',      desc: '영양제 선택',                  time: '14:15', comp: Y.S_AddType },
+    { title: '등록 방식',        desc: '사진·검색·직접 입력 (공통)',  time: '14:16', comp: Y.S_AddChoice },
+    { title: '촬영',             desc: '영양제 라벨 가이드 사각형',     time: '14:17', comp: Y.S_Camera },
+    { title: '검색',             desc: '최근 검색 + 큰 카드',          time: '14:18', comp: Y.S_Search },
+    { title: '확인 (모달)',      desc: '"찾으시는 영양제가 맞나요?"',  time: '14:18', comp: Y.S_SearchConfirm },
+    { title: '체크 + FAB',       desc: '오메가-3 알티지 ✓ · 우하단 1', time: '14:19', comp: Y.S_SearchAdded },
+    { title: '선택 — 빈 상태',   desc: '아직 선택 없음',               time: '14:20', comp: Y.S_SelectedEmpty },
+    { title: '선택 — 리스트',    desc: '제품 3종 + 다음',              time: '14:21', comp: Y.S_SelectedList },
+    { title: '섭취량 편집',      desc: '토글 ON · dose pill',          time: '14:21', comp: Y.S_SelectedEdit },
+    { title: '섭취량 시트',      desc: '0.5 / 1(권장) / 1.5',          time: '14:22', comp: Y.S_DoseSheet },
+    { title: '분석 중',          desc: '영양제 ↔ 처방약 궁합 (transient)', time: '14:23', comp: Y.S_AnalyzeLoading },
+    { title: '결과',             desc: '상호작용·상담 권장 톤',        time: '14:24', comp: Y.S_Result },
+    { title: '시간 정하기',      desc: '영양제 챙겨 드실 시간 (저녁)', time: '14:28', comp: () => <Y.S_Schedule kind="supp" /> },
+    { title: '시간 변경 (시트)', desc: '저녁 시간 — wheel picker',     time: '14:28', comp: () => <Y.S_TimeSheet kind="supp" slot="저녁" /> },
+    { title: '요일 변경 (시트)', desc: '매일/평일/격일/사용자 정의',   time: '14:29', comp: () => <Y.S_DaySheet kind="supp" /> },
+    { title: '메모',             desc: '개인 메모 (본인만 열람)',      time: '14:30', comp: () => <Y.S_AddNote kind="memo" /> },
+    { title: '등록 완료',        desc: '저장 완료 — 오늘 약속·약통 진입', time: '14:31', comp: Y.S_RegDone },
   ],
 
-  // ZONE 3 · CAREGIVER
-  s_caregiver_home: [
-    { title: '오늘 한눈에', desc: '복용 · 재고 · 권고', time: '14:22', comp: Y.S_CaregiverHome },
+  // ZONE 2 · SENIOR MAIN — Tab 3 · 내 정보 + ZONE 3 · CAREGIVER (단일 화면 모음)
+  s_compact_misc: [
+    { title: '가족 공유 설정',   desc: '박정숙이 보는 공유 토글',         time: '20:14', comp: Y.S_ShareSetup },
+    { title: '상담 리포트',      desc: '4주치 미리보기 + 보내기',         time: '08:50', comp: Y.S_Report },
+    { title: '보호자 홈 (김민재)', desc: '아들이 보는 어머니 약속 — 별도 모드', time: '14:22', comp: Y.S_CaregiverHome },
   ],
 
   // ZONE 4 · SYSTEM
@@ -417,10 +385,6 @@ const flows = {
     { title: '오늘(늘) active',    desc: '워드마크 PNG',     time: '·', comp: Y.S_TabBar3 },
     { title: '내 약(약) active',   desc: '워드마크 PNG',     time: '·', comp: Y.S_TabBar3Active },
     { title: '내 정보(나) active', desc: '워드마크 PNG',     time: '·', comp: Y.S_TabBar3MeActive },
-  ],
-  // EXPLORE — 보존 B 5-tab
-  explore_b: [
-    { title: 'B안 (5-tab)', desc: '약 FAB · 5-slot', time: '·', comp: Y.S_TabBarB },
   ],
 };
 

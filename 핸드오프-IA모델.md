@@ -2,7 +2,7 @@
 
 ## Context
 
-[핸드오프-지식정리2.md](핸드오프-지식정리2.md)의 결론(**Path B = RN 직접**, Phase 1 정리부터)을 따른다. 본 문서는 그 직전 단계 산출물 — **모든 41개 컴포넌트의 IA 위치를 단일 트리로 고정**해 두고, 각 위치가 RN navigation 패턴으로 어떻게 옮겨지는지(+ Figma 매핑 reference) 정리한다.
+[핸드오프-지식정리2.md](핸드오프-지식정리2.md)의 결론(**Path B = RN 직접**, Phase 1 정리부터)을 따른다. 본 문서는 그 직전 단계 산출물 — **모든 43개 컴포넌트의 IA 위치를 단일 트리로 고정**해 두고, 각 위치가 RN navigation 패턴으로 어떻게 옮겨지는지(+ Figma 매핑 reference) 정리한다.
 
 수신자: Phase 1 정리 작업자, Phase 2 RN 이식 작업자, (선택) Phase 3 Figma 핸드오프 작업자.
 
@@ -76,7 +76,7 @@ APP STRUCTURE
 
 ---
 
-## 4. 41 컴포넌트 매핑 표 (단일 SOT)
+## 4. 43 컴포넌트 매핑 표 (단일 SOT)
 
 ### ENTRY · 온보딩 (8 화면)
 | Frame | Type | RN screen | 비고 |
@@ -101,30 +101,41 @@ APP STRUCTURE
 | Frame | Type | RN screen | 비고 |
 |---|---|---|---|
 | `S_Cabinet` | 📄 page | MyMedsStack/Cabinet | 종류별 그룹(처방약·일반의약품·영양제) + 등록 CTA. props: `empty` (단일 모드 — 달력은 S_Today 헤더의 월간 expand로 이전됨). **처방약은 처방일·병원 단위 supercard 헤더만** (count + chev). 탭 시 S_RxDetail 모달로 풀 정보 — 페르소나가 봉투 단위로 인지하는 것과 일관 |
-| `S_RxDetail` | 🔲 modal | MyMedsStack/RxDetail | 처방 상세 (처방일·병원 단위). dim 배경 + 중앙 카드, 헤더(doc 아이콘 + 처방약 tag + close ✕) + 약별 시간대 Pill·이름·dose 풀 list + 하단 footer [수정 / 삭제]. supercard 탭 시 노출 |
-| `S_RxEdit` | 🔲 modal | MyMedsStack/RxEdit | 처방 수정. 동일 modal shell(시각적 연속성), 헤더 pencil 아이콘 + "처방 수정" 라벨. 처방일·병원 input + 약별 카드(이름·dose 입력 + 시간대 toggle pill) + "약 추가하기" dashed 버튼. 하단 [취소 / 저장]. S_RxDetail [수정] 탭 시 |
-| `S_RxDelete` | 🔲 modal | MyMedsStack/RxDelete | 처방 삭제 확인. 중앙 alert 모달(maxWidth 340), trash 아이콘 + "이 처방을 삭제할까요?" + 처방일·병원·약 N가지 + warning("되돌릴 수 없어요") + [취소 / 삭제(danger)]. S_RxDetail [삭제] 탭 시 |
+| `S_RxDetail` | ⬆️ sheet | MyMedsStack/RxDetail (presentation: pageSheet) | 처방 상세 (처방일·병원 단위). **iOS 바텀시트 패턴** — 화면 하단에서 lift, 상단 모서리만 28px 라운드(하단 flush), grabber bar(40×5), maxHeight 92%. 헤더(doc 아이콘 + 처방약 tag + close ✕) + 약별 시간대 Pill·이름·dose 풀 list + 하단 footer [수정 / 삭제]. supercard 탭 시 노출 |
+| `S_RxEdit` | ⬆️ sheet | MyMedsStack/RxEdit (presentation: pageSheet) | 처방 수정. **iOS 바텀시트 패턴** (S_RxDetail과 시각 일관). 헤더 pencil 아이콘 + "처방 수정" 라벨, grabber bar. 처방일·병원 input + 약별 카드(이름·dose 입력 + 시간대 toggle pill) + "약 추가하기" dashed 버튼. 하단 [취소 / 저장]. S_RxDetail [수정] 탭 시 |
+| `S_RxDelete` | 🔲 modal | MyMedsStack/RxDelete | 처방 삭제 확인. **중앙 alert (sheet 아님 — destructive 컨벤션)**, maxWidth 340, trash 아이콘 + "이 처방을 삭제할까요?" + 처방일·병원·약 N가지 + warning("되돌릴 수 없어요") + [취소 / 삭제(danger)]. S_RxDetail [삭제] 탭 시 |
 | `S_IntakeCalendar` | 📄 page (legacy) | — | export는 호환성 유지. 월간 캘린더 자체는 S_Today 헤더의 expandable 월간 그리드로 이전 |
 
-**Flow 🌊 등록 (16 화면, modal·sheet·loading 혼재)**
+**Flow 🌊 등록 (16 화면, 시나리오 2개로 재구조 — 약 등록 / 영양제 등록. 일부 화면 겹침 허용)**
+
+> 시나리오 분할 원칙: 분기(사진/검색/직접) 단위 sub-flow는 시니어가 따라가기 어려워 **사용 의도 단위(약 vs 영양제) 직선 흐름**으로 재배치. 같은 컴포넌트(S_AddType/S_AddChoice/S_DoseNotice)가 양쪽 시나리오에 등장.
+
+**시나리오 ① 약 등록 (처방약·일반의약품)** — 11 entries: AddType → AddChoice → Camera → Confirm → AnalyzeLoading → Result → Schedule(`kind="med"`) → **TimeSheet** → **DaySheet** → AddNote(`kind="recommendation"`) → **RegDone**
+**시나리오 ② 영양제 등록** — 17 entries: AddType → AddChoice → Camera → Search → SearchConfirm → SearchAdded → SelectedEmpty → SelectedList → SelectedEdit → DoseSheet → AnalyzeLoading → Result → Schedule(`kind="supp"`) → **TimeSheet** → **DaySheet** → AddNote(`kind="memo"`) → **RegDone** (사진 가지는 영양제 라벨 촬영용 — Confirm 분기 없이 검색 흐름과 합류)
+
+> 양 시나리오 공통: AnalyzeLoading + Result는 약 간/약↔영양제 상호작용 분석으로 둘 다 등장. AddNote는 **prop variant**: 약 등록 = 의료인 권고사항(약사/의사/직접 출처 chips), 영양제 = 개인 메모(출처 chips 없음). 마지막 단계는 RegDone(등록 완료) — 알림 미리보기는 폐기 (S_DoseNotice는 컴포넌트로만 보존).
+
 | Frame | Type | RN screen | 비고 |
 |---|---|---|---|
-| `S_AddType` | 🔲 modal | MyMedsStack/AddType (modal) | 영양제/복용의약품 분기 |
-| `S_AddChoice` | 📄 page | MyMedsStack/AddChoice | 사진/검색/직접 |
-| `S_Camera` | 📄 page | MyMedsStack/Camera | 사진 가지 |
-| `S_Confirm` | 📄 page | MyMedsStack/Confirm | 사진 가지 + 직접 가지 재사용 |
-| `S_Search` | 📄 page | MyMedsStack/Search | 최근 검색 + 결과 |
+| `S_AddType` | 🔲 modal | MyMedsStack/AddType (modal) | 영양제/복용의약품 분기. 양 시나리오 진입 |
+| `S_AddChoice` | 📄 page | MyMedsStack/AddChoice | **공통 화면 — 양 시나리오 동일**. 헤드라인 "지금 드시는 약과 영양제를 / 알려주세요" + 서브 "사진이나 이름으로 빠르게 찾을 수 있어요". 카드 옵션 3개(사진/검색/직접) |
+| `S_Camera` | 📄 page | MyMedsStack/Camera | 약 등록 시나리오 — 가이드 사각형 + 샘플 약봉투(병원·약국·환자) |
+| `S_Confirm` | 📄 page | MyMedsStack/Confirm | 약 등록 OCR 확인 — **하나의 Card 안에 처방 헤더(병원·약국·조제일·환자·약 N가지) + 약 row 리스트(이름·용량·총일수·복용시점) 통합**. 처방-약 동일 그룹 시각 인지. 직접 입력 시 빈 상태 재사용 |
+| `S_Search` | 📄 page | MyMedsStack/Search | 영양제 검색. 최근 검색 + 결과 |
 | `S_SearchConfirm` | 🔲 modal | MyMedsStack/SearchConfirm (modal) | "이 제품 맞나요?" |
 | `S_SearchAdded` | 📄 page | MyMedsStack/SearchAdded | 체크 + CTA pill ("다 고르셨나요?") |
 | `S_SelectedEmpty` | 📄 page | MyMedsStack/Selected (empty state) | 빈 상태 |
 | `S_SelectedList` | 📄 page | MyMedsStack/Selected (list) | 같은 screen, prop 분기 |
 | `S_SelectedEdit` | 📄 page | MyMedsStack/Selected (edit) | 같은 screen, edit toggle |
 | `S_DoseSheet` | ⬆️ sheet | MyMedsStack/DoseSheet | 섭취량 입력 |
-| `S_AnalyzeLoading` | ⏳ transient | MyMedsStack/Analyzing | 자동 진행 |
-| `S_Result` | 📄 page | MyMedsStack/Result | 상호작용 경고 |
-| `S_Schedule` | 📄 page | MyMedsStack/Schedule | 시간 정하기 |
-| `S_AddNote` | 📄 page | MyMedsStack/AddNote | 권고사항 입력 |
-| `S_DoseNotice` | 📄 page | MyMedsStack/NoticePreview | 알림 미리보기 |
+| `S_AnalyzeLoading` | ⏳ transient | MyMedsStack/Analyzing | **prop**: `kind?: 'supp'\|'med'` (default `supp`). 양쪽 모두 **상호작용 확인** 의미. supp = "박정숙님의 영양제를 / 약과 궁합 확인중..", med = "기존에 드시는 약·영양제와 / 궁합을 확인 중이에요..". 자동 진행 |
+| `S_Result` | 📄 page | MyMedsStack/Result | **prop**: `kind?: 'supp'\|'med'` (default `supp`). supp = 영양제 product 헤더 + 출혈 경고 + 비타민 D 중복 카드. med = 처방 헤더(사랑내과 3가지) + 복용 시점 경고(메트포르민+식사) + safe 카드("큰 충돌 없음"). 양쪽 동일 footer ([약통에 추가하기 / 나중에]) |
+| `S_Schedule` | 📄 page | MyMedsStack/Schedule | **prop**: `kind?: 'med'\|'supp'` (default `med`). 양 시나리오 공통 step. 상단 컨텍스트 chip(처방 N가지 / 영양제 N가지) + **섭취 요일 row card** (탭 → S_DaySheet) + 3 시간대 카드 (각 카드 탭 → S_TimeSheet, 시간 옆 chev로 tap 힌트). med = 3 시간대 모두 ON·약 list, 요일 = "매일 (5/2 ~ 5/30 · 30일분)" 약봉지 기준 pre-set; supp = 저녁만 ON 예시, 요일 = "매일" default |
+| `S_TimeSheet` | ⬆️ sheet | MyMedsStack/TimeSheet | **prop**: `kind?`, `slot?: '아침'\|'점심'\|'저녁'`. 시간대 wheel picker 바텀시트. backdrop = S_Schedule. 상단 추천 섭취 시간 chip(시간대 컬러) + 3-column wheel(시 / 분 / 오전·오후 — 중앙 선택 행 violet 하이라이트, 위·아래 행 opacity fade) + [취소 / 확인]. RN: native iOS pageSheet + DateTimePicker |
+| `S_DaySheet` | ⬆️ sheet | MyMedsStack/DaySheet | **prop**: `kind?`. 섭취 요일 바텀시트. backdrop = S_Schedule. 헤드라인 + 자주 쓰는 설정 chip 4개(매일/평일/격일/주말) + 요일 직접 선택 chips(월~일) + [취소 / 확인]. 격일 복용 케이스 지원. med은 약봉지 기간 안내 톤, supp는 자유 선택 톤 |
+| `S_AddNote` | 📄 page | MyMedsStack/AddNote | **prop**: `kind?: 'recommendation'\|'memo'` (default `recommendation`). recommendation = 약 등록 — "약사님이 뭐라고 하셨나요?" + 음성 입력 + 출처 chips(약사/의사/직접). memo = 영양제 등록 — "이 영양제에 대해 메모하실래요?" + 음성 입력 + "본인만 열람" 안내 (출처 chips 없음) |
+| `S_DoseNotice` | 📄 page (legacy) | MyMedsStack/NoticePreview | 알림 미리보기 — 등록 flow에서 RegDone으로 교체. 컴포넌트 정의·export 보존 (System zone push 미리보기로 재사용 가능) |
+| `S_RegDone` | 📄 page | MyMedsStack/RegDone | **등록 완료** — 양 시나리오 공통 마지막 step. 큰 violet check 아이콘 + "저장이 완료됐어요" + "오늘 약속에서 바로 / 드시면 돼요" + [오늘 약속 보러 가기 / 약통 둘러보기] |
 
 ### SENIOR MAIN · TAB · 내 정보 (3 화면)
 | Frame | Type | RN screen | 비고 |
@@ -143,14 +154,10 @@ APP STRUCTURE
 |---|---|---|---|
 | `S_DosePush` | 🔔 system | NotifeeForeground/Push | tap → SeniorTabs/Today deep link |
 
-### EXPLORE · TabBar 데모 (7 화면, 채택 후 삭제 예정)
+### EXPLORE · TabBar 데모 (6 화면, 채택 후 삭제 예정)
 | Frame | Type | RN | 비고 |
 |---|---|---|---|
-| `S_TabBarB`, `S_TabBar3`, `S_TabBar3Active`, `S_TabBar3MeActive`, `S_TabBar3IconToday`, `S_TabBar3IconYak`, `S_TabBar3IconMe` | 📄 demo | (해당 없음) | 디자인 탐색용, 핸드오프 대상 아님 |
-
-**총: 39 컴포넌트** (ENTRY 8 + 오늘 2 + 내 약 19 + 내 정보 3 + CAREGIVER 1 + SYSTEM 1 + EXPLORE 5)
-
-> 위 표 발견 시 `EXPLORE`는 7개로 표기되었으나 별도 표는 5개만 — `S_TabBarB / 3 / 3Active / 3MeActive` 4개 + `S_TabBar3IconToday/Yak/Me` 3개 = 7개. 다음 plan 실행 시 정리.
+| `S_TabBar3`, `S_TabBar3Active`, `S_TabBar3MeActive`, `S_TabBar3IconToday`, `S_TabBar3IconYak`, `S_TabBar3IconMe` | 📄 demo | (해당 없음) | 디자인 탐색용, 핸드오프 대상 아님. 워드마크 변형(3) + stroke icon 채택안(3). 5-tab + FAB B안은 시니어 터치 영역 충돌로 탈락·삭제됨 |
 
 ---
 
@@ -167,17 +174,16 @@ SeniorTabs (Tab.Navigator)
 │   ├─ Cabinet (📄 S_Cabinet) ← Tab 진입 default
 │   │   ├─ default          종류별 그룹 목록 view (처방 supercard 포함)
 │   │   └─ empty=true       빈 상태 (첫 사용)
-│   ├─ RxDetail (🔲 S_RxDetail) — supercard 탭 시 모달
-│   │   ├─ RxEdit (🔲 S_RxEdit) — [수정] 탭 시
-│   │   └─ RxDelete (🔲 S_RxDelete) — [삭제] 탭 시 (확인 alert)
-│   └─ Flow "등록" (16 screens, sub-stack 또는 sequence)
-│       ├─ AddType (🔲 modal)
-│       ├─ AddChoice (📄)
-│       ├─ [사진 가지] Camera → Confirm
-│       ├─ [검색 가지] Search → SearchConfirm (🔲) → SearchAdded
-│       ├─ [직접 가지] Confirm 재사용
-│       ├─ [영양제 후속] Selected(empty/list/edit) → DoseSheet (⬆️) → AnalyzeLoading (⏳) → Result
-│       └─ [공통 마무리] Schedule → AddNote → NoticePreview
+│   ├─ RxDetail (⬆️ S_RxDetail) — supercard 탭 시 바텀시트
+│   │   ├─ RxEdit (⬆️ S_RxEdit) — [수정] 탭 시 (시트)
+│   │   └─ RxDelete (🔲 S_RxDelete) — [삭제] 탭 시 (확인 alert, destructive)
+│   └─ Flow "등록" (16 컴포넌트, 시나리오 2개로 재구조 — 화면 일부 겹침)
+│       ├─ ① 약 등록 (처방약·일반의약품)
+│       │     AddType (🔲) → AddChoice → Camera → Confirm → Schedule → DoseNotice
+│       └─ ② 영양제 등록
+│             AddType (🔲) → AddChoice → Search → SearchConfirm (🔲) → SearchAdded
+│             → SelectedEmpty / List / Edit → DoseSheet (⬆️) → AnalyzeLoading (⏳)
+│             → Result → AddNote → DoseNotice
 │
 └─ Tab "내 정보" → MyInfoStack
     ├─ MyPage (📄 hub)
