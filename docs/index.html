@@ -165,7 +165,7 @@
 
   <section class="flow"><div class="flow-head"><div class="flow-num">약통</div>
     <div><h2 class="flow-title">통합 약통</h2>
-    <p class="flow-sub">빈 상태 → 목록(처방 supercard) → 처방 상세(모달)</p></div></div>
+    <p class="flow-sub">빈 상태 → 목록(처방 supercard) → 처방 상세 → 수정 / 삭제(모달)</p></div></div>
     <div class="screens" id="s_mymeds_cabinet"></div></section>
 
   <section class="flow"><div class="flow-head"><div class="flow-num">등록</div>
@@ -353,6 +353,10 @@ const flows = {
       comp: Y.S_Cabinet },
     { title: '처방 상세 (모달)',  desc: '5월 10일 사랑내과 풀 정보',     time: '11:31',
       comp: Y.S_RxDetail },
+    { title: '처방 수정 (모달)',  desc: '필드 입력 — 약 추가/시간 토글', time: '11:32',
+      comp: Y.S_RxEdit },
+    { title: '처방 삭제 (모달)',  desc: '확인 alert — 되돌릴 수 없음',   time: '11:33',
+      comp: Y.S_RxDelete },
   ],
   s_mymeds_reg_entry: [
     { title: '분기',      desc: '영양제 / 복용의약품 (모달)',  time: '9:40', comp: Y.S_AddType },

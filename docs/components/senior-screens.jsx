@@ -445,6 +445,20 @@ const Ic = ({ name, size = 24, color = "currentColor", strokeWidth = 2 }) => {
           <path d="M8 11l8-4M8 13l8 4" />
         </svg>
       );
+    case "pencil":
+      return (
+        <svg {...p}>
+          <path d="M4 20h4l10-10-4-4L4 16v4z" />
+          <path d="M14 6l4 4" />
+        </svg>
+      );
+    case "trash":
+      return (
+        <svg {...p}>
+          <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" />
+          <path d="M10 11v6M14 11v6" />
+        </svg>
+      );
     default:
       return null;
   }
@@ -3910,6 +3924,257 @@ const S_RxDetail = () => {
             </div>
           ))}
         </div>
+
+        <div style={{
+          borderTop: `1px solid ${TC.outline}`,
+          padding: '14px 22px',
+          display: 'flex',
+          gap: 10,
+          background: TC.surfaceLow,
+        }}>
+          <button style={{
+            flex: 1, minHeight: 56,
+            background: TC.surfaceLowest,
+            border: `1.5px solid ${TC.outline}`,
+            borderRadius: 14,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            fontSize: 17, fontWeight: 700, fontFamily: 'inherit',
+            color: TC.ink, cursor: 'pointer',
+          }}>
+            <Ic name="pencil" size={20} color={TC.ink} />
+            수정
+          </button>
+          <button style={{
+            flex: 1, minHeight: 56,
+            background: TC.surfaceLowest,
+            border: `1.5px solid ${TC.outline}`,
+            borderRadius: 14,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            fontSize: 17, fontWeight: 700, fontFamily: 'inherit',
+            color: TC.danger, cursor: 'pointer',
+          }}>
+            <Ic name="trash" size={20} color={TC.danger} />
+            삭제
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// =============================================================
+// S_RxEdit — 처방 수정 모달
+// S_RxDetail에서 [수정] 버튼 → 동일 모달 shell, 입력 필드로 전환
+// =============================================================
+
+const S_RxEdit = () => {
+  const rx = {
+    date: '5월 10일',
+    clinic: '사랑내과',
+    items: [
+      { name: '아스피린 100mg',      dose: '1정 · 식후', time: ['아침'] },
+      { name: '아토르바스타틴 10mg', dose: '1정',         time: ['저녁'] },
+      { name: '메트포르민 500mg',    dose: '1정',         time: ['아침','저녁'] },
+    ],
+  };
+  const ALL_TIMES = ['아침', '점심', '저녁'];
+  const timeToTone = (t) => (
+    { '아침': 'morning', '점심': 'noon', '저녁': 'evening' }[t] || 'neutral'
+  );
+  const fieldStyle = {
+    width: '100%',
+    padding: '12px 14px',
+    fontSize: 17,
+    fontWeight: 600,
+    color: TC.ink,
+    background: TC.surfaceLowest,
+    border: `1.5px solid ${TC.outline}`,
+    borderRadius: 12,
+    fontFamily: 'inherit',
+    letterSpacing: -0.2,
+    boxSizing: 'border-box',
+  };
+  const labelStyle = {
+    fontSize: 13, fontWeight: 700, color: TC.inkFaint,
+    marginBottom: 6, letterSpacing: 0.2,
+  };
+
+  return (
+    <div style={{
+      position: 'absolute', inset: 0,
+      background: 'rgba(17,24,39,0.5)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '40px 16px',
+    }}>
+      <div style={{
+        width: '100%', maxHeight: '90%',
+        background: TC.surfaceLowest,
+        borderRadius: 28,
+        boxShadow: '0 20px 60px rgba(17,24,39,0.3)',
+        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      }}>
+        <div style={{
+          padding: '20px 22px 16px',
+          display: 'flex', alignItems: 'center', gap: 12,
+          borderBottom: `1px solid ${TC.outline}`,
+        }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: 12,
+            background: TC.primaryFixed,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
+          }}>
+            <Ic name="pencil" size={22} color={TC.primary} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: TC.primary, marginBottom: 2 }}>
+              처방 수정
+            </div>
+            <div style={{ fontSize: 19, fontWeight: 700, color: TC.ink, letterSpacing: -0.3 }}>
+              {rx.date} · {rx.clinic}
+            </div>
+          </div>
+          <button style={{
+            width: 36, height: 36, borderRadius: 9999,
+            background: TC.surfaceContainer, border: 'none',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', flexShrink: 0,
+            fontSize: 18, fontWeight: 700, fontFamily: 'inherit',
+            color: TC.ink, lineHeight: 1,
+          }}>
+            ✕
+          </button>
+        </div>
+
+        <div style={{ flex: 1, overflow: 'auto', padding: '16px 22px 20px' }}>
+          <div style={{ display: 'flex', gap: 10, marginBottom: 18 }}>
+            <div style={{ flex: 1 }}>
+              <div style={labelStyle}>처방일</div>
+              <div style={fieldStyle}>{rx.date}</div>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={labelStyle}>병원</div>
+              <div style={fieldStyle}>{rx.clinic}</div>
+            </div>
+          </div>
+
+          <div style={labelStyle}>약 ({rx.items.length}가지)</div>
+          {rx.items.map((m, i) => (
+            <div key={i} style={{
+              padding: 14,
+              marginBottom: 10,
+              background: TC.surfaceLow,
+              borderRadius: 14,
+              border: `1px solid ${TC.outline}`,
+            }}>
+              <div style={{ ...fieldStyle, marginBottom: 8, fontSize: 17, fontWeight: 700 }}>
+                {m.name}
+              </div>
+              <div style={{ ...fieldStyle, marginBottom: 10, fontSize: 15, color: TC.inkVariant }}>
+                {m.dose}
+              </div>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {ALL_TIMES.map((t, k) => {
+                  const on = m.time.includes(t);
+                  return on
+                    ? <Pill key={k} tone={timeToTone(t)}>{t}</Pill>
+                    : (
+                      <span key={k} style={{
+                        display: 'inline-flex', alignItems: 'center',
+                        padding: '6px 12px', borderRadius: 9999,
+                        background: TC.surfaceLowest,
+                        border: `1.5px dashed ${TC.outline}`,
+                        fontSize: 14, fontWeight: 600, color: TC.inkFaint,
+                      }}>{t}</span>
+                    );
+                })}
+              </div>
+            </div>
+          ))}
+
+          <button style={{
+            width: '100%', minHeight: 52,
+            background: TC.surfaceLowest,
+            border: `1.5px dashed ${TC.primary}`,
+            borderRadius: 14, marginTop: 4,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            fontSize: 16, fontWeight: 700, fontFamily: 'inherit',
+            color: TC.primary, cursor: 'pointer',
+          }}>
+            <Ic name="plus" size={20} color={TC.primary} />
+            약 추가하기
+          </button>
+        </div>
+
+        <div style={{
+          borderTop: `1px solid ${TC.outline}`,
+          padding: '14px 22px',
+          display: 'flex', gap: 10,
+          background: TC.surfaceLow,
+        }}>
+          <BigButton variant="soft" style={{ flex: 1 }}>취소</BigButton>
+          <BigButton variant="solid" style={{ flex: 1.4 }}>저장</BigButton>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// =============================================================
+// S_RxDelete — 처방 삭제 확인 모달
+// S_RxDetail에서 [삭제] 버튼 → 중앙 alert 형태. 같은 dim overlay로 시각 연속성
+// =============================================================
+
+const S_RxDelete = () => {
+  const rx = { date: '5월 10일', clinic: '사랑내과', count: 3 };
+  return (
+    <div style={{
+      position: 'absolute', inset: 0,
+      background: 'rgba(17,24,39,0.5)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '40px 24px',
+    }}>
+      <div style={{
+        width: '100%', maxWidth: 340,
+        background: TC.surfaceLowest,
+        borderRadius: 24,
+        padding: '28px 22px 22px',
+        textAlign: 'center',
+        boxShadow: '0 20px 60px rgba(17,24,39,0.3)',
+      }}>
+        <div style={{
+          width: 64, height: 64, borderRadius: 9999,
+          background: TC.dangerBg,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          marginBottom: 14,
+        }}>
+          <Ic name="trash" size={32} color={TC.danger} strokeWidth={2.4} />
+        </div>
+        <h2 style={{
+          fontSize: 22, fontWeight: 700, color: TC.ink,
+          margin: '0 0 8px', letterSpacing: -0.3,
+        }}>
+          이 처방을 삭제할까요?
+        </h2>
+        <div style={{ fontSize: 17, color: TC.inkVariant, lineHeight: 1.55 }}>
+          <span style={{ fontWeight: 700, color: TC.ink }}>{rx.date} · {rx.clinic}</span>
+          <br/>
+          약 {rx.count}가지가 함께 사라져요.
+        </div>
+        <div style={{
+          marginTop: 14, padding: '10px 14px',
+          background: TC.warningBg, color: TC.onWarning,
+          borderRadius: 12,
+          fontSize: 14, fontWeight: 600,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+        }}>
+          <Ic name="alert" size={16} color={TC.onWarning} />
+          삭제한 처방은 되돌릴 수 없어요.
+        </div>
+        <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+          <BigButton variant="soft" style={{ flex: 1 }}>취소</BigButton>
+          <BigButton variant="danger" style={{ flex: 1 }}>삭제</BigButton>
+        </div>
       </div>
     </div>
   );
@@ -5425,6 +5690,8 @@ window.YS = {
   S_Today,
   S_Cabinet,
   S_RxDetail,
+  S_RxEdit,
+  S_RxDelete,
   S_IntakeCalendar,
   S_StockCheck,
   S_ShareSetup,

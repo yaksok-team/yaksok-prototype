@@ -2,7 +2,7 @@
 
 ## Context
 
-[핸드오프-지식정리2.md](핸드오프-지식정리2.md)의 결론(**Path B = RN 직접**, Phase 1 정리부터)을 따른다. 본 문서는 그 직전 단계 산출물 — **모든 38개 컴포넌트의 IA 위치를 단일 트리로 고정**해 두고, 각 위치가 RN navigation 패턴으로 어떻게 옮겨지는지(+ Figma 매핑 reference) 정리한다.
+[핸드오프-지식정리2.md](핸드오프-지식정리2.md)의 결론(**Path B = RN 직접**, Phase 1 정리부터)을 따른다. 본 문서는 그 직전 단계 산출물 — **모든 41개 컴포넌트의 IA 위치를 단일 트리로 고정**해 두고, 각 위치가 RN navigation 패턴으로 어떻게 옮겨지는지(+ Figma 매핑 reference) 정리한다.
 
 수신자: Phase 1 정리 작업자, Phase 2 RN 이식 작업자, (선택) Phase 3 Figma 핸드오프 작업자.
 
@@ -76,7 +76,7 @@ APP STRUCTURE
 
 ---
 
-## 4. 38 컴포넌트 매핑 표 (단일 SOT)
+## 4. 41 컴포넌트 매핑 표 (단일 SOT)
 
 ### ENTRY · 온보딩 (8 화면)
 | Frame | Type | RN screen | 비고 |
@@ -96,12 +96,14 @@ APP STRUCTURE
 | `S_Today` | 📄 page | TodayStack/Home | props: `empty`, `checked`, `collapsed` (4 상태 variant: 빈 / 진행 / Breathe / 접힘). 시간대별 row = **처방 봉투(rx-bag, 처방일·병원·내용물)** + **영양제 통(supp, 단품)**. 페르소나가 "약 이름"이 아닌 "봉투/통" 단위로 인지하기 때문. 체크 단위도 봉투/통 (개별 약 체크 X). 빈 상태(`empty=true`)는 등록 0개일 때 — Capsule + 약 등록 CTA. 헤더에 **주간 streak strip** + `이번 달 보기` 토글로 **월간 그리드 expand** (S_Cabinet의 달력 모드 흡수) |
 | `S_StockCheck` | 📄 page | TodayStack/StockCheck | 잔여 점검 (요일 비종속, 누락 감지 등 내부 트리거 → 풀 페이지). **처방 그룹(처방일·병원, "N일치")** + **영양제 통(브랜드, "N정")** 단위 카드 — 페르소나가 봉투/통 단위로 인지하기 때문. 신뢰-우선 패턴: 추정 표시 → `맞아요` 1탭 또는 `다시 세어볼게요`로 정밀 입력. 처방 안 약 학술명은 보조 표시. ⚠️ 이 단위 모델은 S_Today/S_Cabinet/등록 flow와 일시적 불일치 — 추후 IA 전반 그룹화 마이그레이션 예정 |
 
-### SENIOR MAIN · TAB · 내 약 (19 화면)
+### SENIOR MAIN · TAB · 내 약 (21 화면)
 **Tab 메인 페이지 (2)**
 | Frame | Type | RN screen | 비고 |
 |---|---|---|---|
 | `S_Cabinet` | 📄 page | MyMedsStack/Cabinet | 종류별 그룹(처방약·일반의약품·영양제) + 등록 CTA. props: `empty` (단일 모드 — 달력은 S_Today 헤더의 월간 expand로 이전됨). **처방약은 처방일·병원 단위 supercard 헤더만** (count + chev). 탭 시 S_RxDetail 모달로 풀 정보 — 페르소나가 봉투 단위로 인지하는 것과 일관 |
-| `S_RxDetail` | 🔲 modal | MyMedsStack/RxDetail | 처방 상세 (처방일·병원 단위). dim 배경 + 중앙 카드, 헤더(doc 아이콘 + 처방약 tag + close ✕) + 약별 시간대 Pill·이름·dose 풀 list. supercard 탭 시 노출 |
+| `S_RxDetail` | 🔲 modal | MyMedsStack/RxDetail | 처방 상세 (처방일·병원 단위). dim 배경 + 중앙 카드, 헤더(doc 아이콘 + 처방약 tag + close ✕) + 약별 시간대 Pill·이름·dose 풀 list + 하단 footer [수정 / 삭제]. supercard 탭 시 노출 |
+| `S_RxEdit` | 🔲 modal | MyMedsStack/RxEdit | 처방 수정. 동일 modal shell(시각적 연속성), 헤더 pencil 아이콘 + "처방 수정" 라벨. 처방일·병원 input + 약별 카드(이름·dose 입력 + 시간대 toggle pill) + "약 추가하기" dashed 버튼. 하단 [취소 / 저장]. S_RxDetail [수정] 탭 시 |
+| `S_RxDelete` | 🔲 modal | MyMedsStack/RxDelete | 처방 삭제 확인. 중앙 alert 모달(maxWidth 340), trash 아이콘 + "이 처방을 삭제할까요?" + 처방일·병원·약 N가지 + warning("되돌릴 수 없어요") + [취소 / 삭제(danger)]. S_RxDetail [삭제] 탭 시 |
 | `S_IntakeCalendar` | 📄 page (legacy) | — | export는 호환성 유지. 월간 캘린더 자체는 S_Today 헤더의 expandable 월간 그리드로 이전 |
 
 **Flow 🌊 등록 (16 화면, modal·sheet·loading 혼재)**
@@ -166,6 +168,8 @@ SeniorTabs (Tab.Navigator)
 │   │   ├─ default          종류별 그룹 목록 view (처방 supercard 포함)
 │   │   └─ empty=true       빈 상태 (첫 사용)
 │   ├─ RxDetail (🔲 S_RxDetail) — supercard 탭 시 모달
+│   │   ├─ RxEdit (🔲 S_RxEdit) — [수정] 탭 시
+│   │   └─ RxDelete (🔲 S_RxDelete) — [삭제] 탭 시 (확인 alert)
 │   └─ Flow "등록" (16 screens, sub-stack 또는 sequence)
 │       ├─ AddType (🔲 modal)
 │       ├─ AddChoice (📄)
