@@ -153,7 +153,7 @@
 
   <section class="flow"><div class="flow-head"><div class="flow-num">홈</div>
     <div><h2 class="flow-title">복용 체크</h2>
-    <p class="flow-sub">진행 → 권고 강조 → Breathe(완료) → 일요일 잔여 확인(시트)</p></div></div>
+    <p class="flow-sub">빈 → 진행 → Breathe(완료) → 접힘(상세보기) → 잔여 점검</p></div></div>
     <div class="screens" id="s_today_home"></div></section>
 
   <!-- TAB 2 · 내 약 -->
@@ -165,13 +165,8 @@
 
   <section class="flow"><div class="flow-head"><div class="flow-num">약통</div>
     <div><h2 class="flow-title">통합 약통</h2>
-    <p class="flow-sub">종류별 통합 (처방약·일반의약품·영양제) + 목록↔달력 토글 + 성분 중복 뱃지 — PRD MVP #3</p></div></div>
-    <div class="sub-label">① 빈 상태 · 첫 사용</div>
-    <div class="screens" id="s_mymeds_cabinet_empty"></div>
-    <div class="sub-label">② 목록 view · 종류별 그룹</div>
-    <div class="screens" id="s_mymeds_cabinet_list"></div>
-    <div class="sub-label">③ 달력 view · 월 grid + streak (S_IntakeCalendar 흡수)</div>
-    <div class="screens" id="s_mymeds_cabinet_calendar"></div></section>
+    <p class="flow-sub">빈 상태 → 목록(처방 supercard) → 처방 상세(모달)</p></div></div>
+    <div class="screens" id="s_mymeds_cabinet"></div></section>
 
   <section class="flow"><div class="flow-head"><div class="flow-num">등록</div>
     <div><h2 class="flow-title">등록 (통합 16 화면)</h2>
@@ -339,27 +334,25 @@ const flows = {
 
   // ZONE 2 · SENIOR MAIN — Tab 1 · 오늘
   s_today_home: [
+    { title: '빈 — 등록 0개',   desc: '약 등록 CTA',           time: '9:50',
+      comp: () => <Y.S_Today empty={true} /> },
     { title: '오늘 — 진행 중', desc: '저녁이 "지금"',         time: '18:56',
       comp: () => <Y.S_Today checked={false} /> },
-    { title: '권고 강조',     desc: '약사 권고 큰 카드',     time: '18:57',
-      comp: () => <Y.S_Today checked={false} focus="notice" /> },
     { title: '완료 — Breathe', desc: '민트로 페이드',         time: '19:01',
       comp: () => <Y.S_Today checked={true} /> },
-    { title: '일요일 잔여 확인', desc: '큰 +/− 버튼 (시트)',  time: '20:00', comp: Y.S_StockCheck },
+    { title: '완료 — 접힘',    desc: '상세보기로 펼치기',     time: '19:08',
+      comp: () => <Y.S_Today checked={true} collapsed={true} /> },
+    { title: '잔여 점검',       desc: '맞아요 / 다시 세어요',  time: '20:00', comp: Y.S_StockCheck },
   ],
 
   // ZONE 2 · SENIOR MAIN — Tab 2 · 내 약
-  s_mymeds_cabinet_empty: [
-    { title: 'Empty',     desc: '첫 사용 · 등록 0개',  time: '9:50',
+  s_mymeds_cabinet: [
+    { title: '빈 — 등록 0개',     desc: '첫 사용',                       time: '9:50',
       comp: () => <Y.S_Cabinet empty={true} /> },
-  ],
-  s_mymeds_cabinet_list: [
-    { title: '목록 view',  desc: '종류별 그룹 + 중복 뱃지', time: '11:30',
-      comp: () => <Y.S_Cabinet mode="list" /> },
-  ],
-  s_mymeds_cabinet_calendar: [
-    { title: '달력 view',  desc: '월 grid + 5일 streak',  time: '19:05',
-      comp: () => <Y.S_Cabinet mode="calendar" /> },
+    { title: '목록 view',         desc: '처방 supercard + 종류별 그룹', time: '11:30',
+      comp: Y.S_Cabinet },
+    { title: '처방 상세 (모달)',  desc: '5월 10일 사랑내과 풀 정보',     time: '11:31',
+      comp: Y.S_RxDetail },
   ],
   s_mymeds_reg_entry: [
     { title: '분기',      desc: '영양제 / 복용의약품 (모달)',  time: '9:40', comp: Y.S_AddType },

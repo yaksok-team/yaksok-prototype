@@ -93,15 +93,16 @@ APP STRUCTURE
 ### SENIOR MAIN · TAB · 오늘 (2 화면)
 | Frame | Type | RN screen | 비고 |
 |---|---|---|---|
-| `S_Today` | 📄 page | TodayStack/Home | props: `checked`, `focus` (3 상태 variant) |
-| `S_StockCheck` | ⬆️ sheet | TodayStack/StockCheckSheet | 일요일 잔여 입력 |
+| `S_Today` | 📄 page | TodayStack/Home | props: `empty`, `checked`, `collapsed` (4 상태 variant: 빈 / 진행 / Breathe / 접힘). 시간대별 row = **처방 봉투(rx-bag, 처방일·병원·내용물)** + **영양제 통(supp, 단품)**. 페르소나가 "약 이름"이 아닌 "봉투/통" 단위로 인지하기 때문. 체크 단위도 봉투/통 (개별 약 체크 X). 빈 상태(`empty=true`)는 등록 0개일 때 — Capsule + 약 등록 CTA. 헤더에 **주간 streak strip** + `이번 달 보기` 토글로 **월간 그리드 expand** (S_Cabinet의 달력 모드 흡수) |
+| `S_StockCheck` | 📄 page | TodayStack/StockCheck | 잔여 점검 (요일 비종속, 누락 감지 등 내부 트리거 → 풀 페이지). **처방 그룹(처방일·병원, "N일치")** + **영양제 통(브랜드, "N정")** 단위 카드 — 페르소나가 봉투/통 단위로 인지하기 때문. 신뢰-우선 패턴: 추정 표시 → `맞아요` 1탭 또는 `다시 세어볼게요`로 정밀 입력. 처방 안 약 학술명은 보조 표시. ⚠️ 이 단위 모델은 S_Today/S_Cabinet/등록 flow와 일시적 불일치 — 추후 IA 전반 그룹화 마이그레이션 예정 |
 
-### SENIOR MAIN · TAB · 내 약 (18 화면)
+### SENIOR MAIN · TAB · 내 약 (19 화면)
 **Tab 메인 페이지 (2)**
 | Frame | Type | RN screen | 비고 |
 |---|---|---|---|
-| `S_Cabinet` | 📄 page | MyMedsStack/Cabinet | 종류별 그룹(처방약·일반의약품·영양제) + 목록↔달력 토글 + 등록 CTA. props: `empty`/`mode='list'\|'calendar'` |
-| `S_IntakeCalendar` | 📄 page (legacy) | — | `S_Cabinet`의 `mode='calendar'`로 흡수 완료. export는 호환성 유지 |
+| `S_Cabinet` | 📄 page | MyMedsStack/Cabinet | 종류별 그룹(처방약·일반의약품·영양제) + 등록 CTA. props: `empty` (단일 모드 — 달력은 S_Today 헤더의 월간 expand로 이전됨). **처방약은 처방일·병원 단위 supercard 헤더만** (count + chev). 탭 시 S_RxDetail 모달로 풀 정보 — 페르소나가 봉투 단위로 인지하는 것과 일관 |
+| `S_RxDetail` | 🔲 modal | MyMedsStack/RxDetail | 처방 상세 (처방일·병원 단위). dim 배경 + 중앙 카드, 헤더(doc 아이콘 + 처방약 tag + close ✕) + 약별 시간대 Pill·이름·dose 풀 list. supercard 탭 시 노출 |
+| `S_IntakeCalendar` | 📄 page (legacy) | — | export는 호환성 유지. 월간 캘린더 자체는 S_Today 헤더의 expandable 월간 그리드로 이전 |
 
 **Flow 🌊 등록 (16 화면, modal·sheet·loading 혼재)**
 | Frame | Type | RN screen | 비고 |
@@ -145,7 +146,7 @@ APP STRUCTURE
 |---|---|---|---|
 | `S_TabBarB`, `S_TabBar3`, `S_TabBar3Active`, `S_TabBar3MeActive`, `S_TabBar3IconToday`, `S_TabBar3IconYak`, `S_TabBar3IconMe` | 📄 demo | (해당 없음) | 디자인 탐색용, 핸드오프 대상 아님 |
 
-**총: 38 컴포넌트** (ENTRY 8 + 오늘 2 + 내 약 18 + 내 정보 3 + CAREGIVER 1 + SYSTEM 1 + EXPLORE 5)
+**총: 39 컴포넌트** (ENTRY 8 + 오늘 2 + 내 약 19 + 내 정보 3 + CAREGIVER 1 + SYSTEM 1 + EXPLORE 5)
 
 > 위 표 발견 시 `EXPLORE`는 7개로 표기되었으나 별도 표는 5개만 — `S_TabBarB / 3 / 3Active / 3MeActive` 4개 + `S_TabBar3IconToday/Yak/Me` 3개 = 7개. 다음 plan 실행 시 정리.
 
@@ -157,14 +158,14 @@ APP STRUCTURE
 SeniorTabs (Tab.Navigator)
 │
 ├─ Tab "오늘" → TodayStack
-│   ├─ TodayHome (📄 S_Today, props: checked/focus)
-│   └─ StockCheckSheet (⬆️ S_StockCheck) — modal presentation
+│   ├─ TodayHome (📄 S_Today, props: empty/checked/collapsed)
+│   └─ StockCheck (📄 S_StockCheck) — full page
 │
 ├─ Tab "내 약" → MyMedsStack
 │   ├─ Cabinet (📄 S_Cabinet) ← Tab 진입 default
-│   │   ├─ mode='list'      목록 view (default)
-│   │   ├─ mode='calendar'  달력 view (S_IntakeCalendar 흡수)
+│   │   ├─ default          종류별 그룹 목록 view (처방 supercard 포함)
 │   │   └─ empty=true       빈 상태 (첫 사용)
+│   ├─ RxDetail (🔲 S_RxDetail) — supercard 탭 시 모달
 │   └─ Flow "등록" (16 screens, sub-stack 또는 sequence)
 │       ├─ AddType (🔲 modal)
 │       ├─ AddChoice (📄)

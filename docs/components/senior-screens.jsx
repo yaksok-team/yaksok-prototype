@@ -2180,7 +2180,367 @@ const S_DoseNotice = () => (
 // FLOW 4 — 오늘의 약속 + 잔여 확인
 // =============================================================
 
-const S_Today = ({ checked = false, focus = null }) => {
+const S_Today = ({ checked = false, collapsed = false, empty = false }) => {
+  const [monthExpanded, setMonthExpanded] = React.useState(false);
+
+  const renderMonthGrid = (todayState) => {
+    const blanks = 3; // 5/1 = 목, Mon-start week → 3 leading blanks
+    const totalDays = 31;
+    const today = 2;
+    const labels = ["월", "화", "수", "목", "금", "토", "일"];
+
+    const cells = [];
+    for (let i = 0; i < blanks; i++) cells.push({ blank: true });
+    for (let d = 1; d <= totalDays; d++) {
+      let status;
+      if (d < today) status = todayState === "empty" ? "future" : "done";
+      else if (d === today) status = todayState;
+      else status = "future";
+      cells.push({ d, status, isToday: d === today });
+    }
+
+    return (
+      <div style={{ marginTop: 16 }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(7, 1fr)",
+            gap: 4,
+            marginBottom: 6,
+          }}
+        >
+          {labels.map((d) => (
+            <div
+              key={d}
+              style={{
+                textAlign: "center",
+                fontSize: 12,
+                fontWeight: 700,
+                color: "rgba(255,255,255,0.7)",
+              }}
+            >
+              {d}
+            </div>
+          ))}
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(7, 1fr)",
+            gap: 4,
+          }}
+        >
+          {cells.map((c, i) => {
+            if (c.blank) return <div key={i} />;
+            const { d, status, isToday } = c;
+            const isDone = status === "done";
+            const isToday2 = isToday;
+            const isFuture = status === "future";
+            return (
+              <div
+                key={i}
+                style={{
+                  aspectRatio: "1",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 9999,
+                  background: isDone
+                    ? TC.safe
+                    : isToday2
+                    ? "#fff"
+                    : "transparent",
+                  border: isFuture
+                    ? "1px dashed rgba(255,255,255,0.28)"
+                    : "none",
+                  color: isDone
+                    ? "#fff"
+                    : isToday2
+                    ? TC.primary
+                    : "rgba(255,255,255,0.55)",
+                  fontSize: 13,
+                  fontWeight: isToday2 ? 700 : 600,
+                  boxShadow: isToday2
+                    ? "0 0 0 3px rgba(255,255,255,0.22)"
+                    : "none",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {d}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const renderMonthToggle = (todayState) => (
+    <>
+      <button
+        onClick={() => setMonthExpanded((v) => !v)}
+        style={{
+          width: "100%",
+          marginTop: 12,
+          padding: "6px 0",
+          background: "transparent",
+          border: "none",
+          color: "rgba(255,255,255,0.85)",
+          fontSize: 13,
+          fontWeight: 700,
+          fontFamily: "inherit",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 6,
+        }}
+      >
+        {monthExpanded ? "주간만 보기" : "이번 달 보기"}
+        <span
+          style={{
+            display: "inline-flex",
+            transform: monthExpanded ? "rotate(-90deg)" : "rotate(90deg)",
+            transition: "transform 240ms cubic-bezier(0.32, 0.72, 0, 1)",
+          }}
+        >
+          <Ic
+            name="chev"
+            size={12}
+            color="rgba(255,255,255,0.85)"
+            strokeWidth={3}
+          />
+        </span>
+      </button>
+      {monthExpanded && renderMonthGrid(todayState)}
+    </>
+  );
+
+  const renderWeekStrip = (todayState, dark = false) => {
+    const past = todayState === "empty" ? "future" : "done";
+    const week = [
+      { day: "월", status: past },
+      { day: "화", status: past },
+      { day: "수", status: past },
+      { day: "목", status: past },
+      { day: "금", status: todayState, isToday: true },
+      { day: "토", status: "future" },
+      { day: "일", status: "future" },
+    ];
+
+    const todayRing = dark ? "#fff" : TC.primary;
+    const todayHalo = dark
+      ? "0 0 0 4px rgba(255,255,255,0.22)"
+      : `0 0 0 4px ${TC.primaryFixed}`;
+    const futureBorder = dark
+      ? "2px dashed rgba(255,255,255,0.4)"
+      : `2px dashed ${TC.surfaceContainerHigh}`;
+    const labelToday = dark ? "#fff" : TC.primary;
+    const labelDone = dark ? "rgba(255,255,255,0.85)" : TC.inkVariant;
+    const labelFuture = dark ? "rgba(255,255,255,0.45)" : TC.inkFaint;
+
+    const renderCircle = (status, isToday) => {
+      const baseSize = isToday ? 32 : 26;
+      const halo = isToday ? todayHalo : "none";
+      if (status === "done") {
+        return (
+          <div
+            style={{
+              width: baseSize,
+              height: baseSize,
+              borderRadius: 9999,
+              background: TC.safe,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: halo,
+            }}
+          >
+            <Ic
+              name="check"
+              size={isToday ? 18 : 14}
+              color="#fff"
+              strokeWidth={3.5}
+            />
+          </div>
+        );
+      }
+      if (status === "in-progress" || status === "empty") {
+        return (
+          <div
+            style={{
+              width: baseSize,
+              height: baseSize,
+              borderRadius: 9999,
+              border: `2.5px solid ${todayRing}`,
+              background: "transparent",
+              boxShadow: halo,
+            }}
+          />
+        );
+      }
+      return (
+        <div
+          style={{
+            width: baseSize,
+            height: baseSize,
+            borderRadius: 9999,
+            border: futureBorder,
+            background: "transparent",
+          }}
+        />
+      );
+    };
+
+    return (
+      <div
+        style={{
+          display: "flex",
+          gap: 4,
+          marginTop: 16,
+          paddingRight: 4,
+        }}
+      >
+        {week.map((d, i) => (
+          <div
+            key={i}
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 13,
+                fontWeight: 700,
+                color: d.isToday
+                  ? labelToday
+                  : d.status === "future"
+                  ? labelFuture
+                  : labelDone,
+              }}
+            >
+              {d.day}
+            </div>
+            {renderCircle(d.status, d.isToday)}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  if (empty) {
+    return (
+      <Shell>
+        <div
+          style={{
+            background: TC.gradientHero,
+            padding: "22px 24px 56px",
+            color: "#fff",
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "baseline",
+              justifyContent: "space-between",
+              gap: 12,
+            }}
+          >
+            <h1
+              style={{
+                fontSize: 32,
+                fontWeight: 700,
+                letterSpacing: -0.6,
+                margin: 0,
+                color: "#fff",
+              }}
+            >
+              오늘의 약속
+            </h1>
+            <div
+              style={{
+                fontSize: 16,
+                fontWeight: 700,
+                color: "rgba(255,255,255,0.85)",
+                flexShrink: 0,
+              }}
+            >
+              5월 2일 금요일
+            </div>
+          </div>
+          {renderWeekStrip("empty", true)}
+          {renderMonthToggle("empty")}
+        </div>
+
+        <div
+          style={{
+            flex: 1,
+            background: TC.surfaceLow,
+            borderRadius: "28px 28px 0 0",
+            marginTop: -28,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "44px 28px 130px",
+            textAlign: "center",
+            position: "relative",
+            zIndex: 2,
+          }}
+        >
+          <div
+            style={{
+              width: 112,
+              height: 112,
+              borderRadius: 9999,
+              background: TC.surfaceContainer,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 22,
+            }}
+          >
+            <Capsule size={60} tilt={-28} />
+          </div>
+          <div
+            style={{
+              fontSize: 24,
+              fontWeight: 700,
+              color: TC.ink,
+              marginBottom: 12,
+              letterSpacing: -0.3,
+            }}
+          >
+            오늘 챙길 약을 등록해 보세요
+          </div>
+          <div
+            style={{
+              fontSize: 18,
+              color: TC.inkVariant,
+              lineHeight: 1.55,
+              marginBottom: 28,
+            }}
+          >
+            처방약이나 영양제를 등록해 두시면
+            <br />
+            매일 잊지 않고 챙겨드려요
+          </div>
+          <div style={{ width: "100%" }}>
+            <BigButton variant="solid">약 등록하기</BigButton>
+          </div>
+        </div>
+
+        <TabBar active="today" />
+      </Shell>
+    );
+  }
+
   const active = "evening"; // 현재 시간 (18:55)
   const statuses = {
     morning: "taken",
@@ -2193,23 +2553,49 @@ const S_Today = ({ checked = false, focus = null }) => {
       time: "오전 8:30",
       icon: "sun",
       tone: "morning",
-      items: ["메트포르민 500mg"],
+      items: [
+        {
+          type: "rx-bag",
+          rxDate: "5월 10일",
+          clinic: "사랑내과",
+          contents: ["메트포르민"],
+        },
+      ],
     },
     noon: {
       label: "점심",
       time: "오후 12:30",
       icon: "noon",
       tone: "noon",
-      items: ["메트포르민 500mg"],
+      items: [
+        {
+          type: "rx-bag",
+          rxDate: "5월 10일",
+          clinic: "사랑내과",
+          contents: ["메트포르민"],
+        },
+      ],
     },
     evening: {
       label: "저녁",
       time: "오후 7:00",
       icon: "moon",
       tone: "evening",
-      items: ["아스피린 100mg", "아토르바스타틴 10mg", "메트포르민 500mg"],
-      notice: checked ? null : "어지러우시면 약사님께 말씀해 주세요",
+      items: [
+        {
+          type: "rx-bag",
+          rxDate: "5월 10일",
+          clinic: "사랑내과",
+          contents: ["아스피린", "아토르바스타틴", "메트포르민"],
+        },
+        {
+          type: "supp",
+          name: "오메가3",
+          dose: "1정",
+        },
+      ],
       breathe: checked,
+      collapsed,
     },
   };
   const cur = tabData[active];
@@ -2219,143 +2605,125 @@ const S_Today = ({ checked = false, focus = null }) => {
     <Shell>
       <div
         style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "radial-gradient(circle at 50% 0%, rgba(120,87,248,0.16) 0%, transparent 55%)",
-          pointerEvents: "none",
+          background: TC.gradientHero,
+          padding: "22px 24px 56px",
+          color: "#fff",
+          position: "relative",
+          zIndex: 1,
         }}
-      />
-      <div style={{ padding: "20px 24px 0", position: "relative", zIndex: 1 }}>
+      >
         <div
           style={{
-            fontSize: 16,
-            fontWeight: 700,
-            color: TC.inkVariant,
-            marginBottom: 4,
+            display: "flex",
+            alignItems: "baseline",
+            justifyContent: "space-between",
+            gap: 12,
           }}
         >
-          5월 2일 금요일
-        </div>
-        <h1
-          style={{
-            fontSize: 32,
-            fontWeight: 700,
-            letterSpacing: -0.6,
-            margin: "0 0 4px",
-          }}
-        >
-          오늘의 약속
-        </h1>
-        <div style={{ fontSize: 19, color: TC.inkVariant, marginTop: 2 }}>
-          {checked ? "오늘 약속 모두 지켰어요 🌱" : "저녁 약이 남았어요"}
-        </div>
-      </div>
-
-      <div
-        style={{
-          padding: "20px 24px 0",
-          display: "flex",
-          gap: 10,
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        {order.map((k) => {
-          const t = tabData[k];
-          const isActive = k === active;
-          const s = statuses[k];
-          return (
-            <div
-              key={k}
-              style={{
-                flex: 1,
-                padding: "14px 6px",
-                borderRadius: 18,
-                background: isActive ? TC.gradientHero : TC.surface,
-                color: isActive ? "#fff" : TC.ink,
-                textAlign: "center",
-                boxShadow: isActive
-                  ? "0 10px 24px rgba(95,58,221,0.32)"
-                  : "none",
-                transition: "all 240ms cubic-bezier(0.32, 0.72, 0, 1)",
-              }}
-            >
-              <div style={{ fontSize: 19, fontWeight: 700, lineHeight: 1.1 }}>
-                {t.label}
-              </div>
-              <div
-                style={{
-                  fontSize: 13,
-                  fontWeight: 600,
-                  marginTop: 5,
-                  opacity: isActive ? 0.95 : 0.6,
-                }}
-              >
-                {s === "taken" ? "✓ 완료" : s === "now" ? "지금" : "예정"}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div
-        style={{
-          padding: "16px 24px 110px",
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          gap: 16,
-          overflow: "auto",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        <DoseGroup
-          tone={cur.tone}
-          icon={cur.icon}
-          label={cur.label}
-          time={cur.time}
-          status={statuses[active]}
-          items={cur.items}
-          breathe={cur.breathe}
-        />
-
-        {!checked && cur.notice && (
-          <Card
+          <h1
             style={{
-              padding: focus === "notice" ? "22px 24px" : "18px 20px",
-              background: TC.warningBg,
-              boxShadow: focus === "notice" ? "0 10px 24px rgba(245,180,0,0.25)" : "none",
+              fontSize: 32,
+              fontWeight: 700,
+              letterSpacing: -0.6,
+              margin: 0,
+              color: "#fff",
             }}
           >
-            <div style={{ display: "flex", gap: focus === "notice" ? 16 : 12,
-              alignItems: "flex-start" }}>
-              <Ic
-                name="alert"
-                size={focus === "notice" ? 36 : 24}
-                color={TC.onWarning}
-              />
-              <div style={{ flex: 1 }}>
-                {focus === "notice" && (
-                  <div style={{ fontSize: 14, fontWeight: 700,
-                    letterSpacing: 0.04, color: TC.onWarning,
-                    textTransform: "uppercase", marginBottom: 6, opacity: 0.8 }}>
-                    약사님 권고
-                  </div>
-                )}
-                <div style={{
-                  fontSize: focus === "notice" ? 19 : 18,
-                  fontWeight: focus === "notice" ? 700 : 600,
-                  color: TC.onWarning,
-                  lineHeight: 1.5,
-                }}>
-                  {cur.notice}
+            오늘의 약속
+          </h1>
+          <div
+            style={{
+              fontSize: 16,
+              fontWeight: 700,
+              color: "rgba(255,255,255,0.85)",
+              flexShrink: 0,
+            }}
+          >
+            5월 2일 금요일
+          </div>
+        </div>
+        {renderWeekStrip(checked ? "done" : "in-progress", true)}
+        {renderMonthToggle(checked ? "done" : "in-progress")}
+      </div>
+
+      <div
+        style={{
+          flex: 1,
+          background: TC.surfaceLow,
+          borderRadius: "28px 28px 0 0",
+          marginTop: -28,
+          display: "flex",
+          flexDirection: "column",
+          position: "relative",
+          zIndex: 2,
+        }}
+      >
+        <div
+          style={{
+            padding: "24px 24px 0",
+            display: "flex",
+            gap: 10,
+          }}
+        >
+          {order.map((k) => {
+            const t = tabData[k];
+            const isActive = k === active;
+            const s = statuses[k];
+            return (
+              <div
+                key={k}
+                style={{
+                  flex: 1,
+                  padding: "14px 6px",
+                  borderRadius: 18,
+                  background: isActive ? TC.gradientHero : TC.surfaceLowest,
+                  color: isActive ? "#fff" : TC.ink,
+                  textAlign: "center",
+                  boxShadow: isActive
+                    ? "0 10px 24px rgba(95,58,221,0.32)"
+                    : "none",
+                  transition: "all 240ms cubic-bezier(0.32, 0.72, 0, 1)",
+                }}
+              >
+                <div style={{ fontSize: 19, fontWeight: 700, lineHeight: 1.1 }}>
+                  {t.label}
+                </div>
+                <div
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                    marginTop: 5,
+                    opacity: isActive ? 0.95 : 0.6,
+                  }}
+                >
+                  {s === "taken" ? "✓ 완료" : s === "now" ? "지금" : "예정"}
                 </div>
               </div>
-            </div>
-          </Card>
-        )}
+            );
+          })}
+        </div>
+
+        <div
+          style={{
+            padding: "16px 24px 110px",
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+            overflow: "auto",
+          }}
+        >
+          <DoseGroup
+            tone={cur.tone}
+            icon={cur.icon}
+            label={cur.label}
+            time={cur.time}
+            status={statuses[active]}
+            items={cur.items}
+            breathe={cur.breathe}
+            collapsed={cur.collapsed}
+          />
+        </div>
       </div>
       <TabBar active="today" />
     </Shell>
@@ -2370,7 +2738,8 @@ const DoseGroup = ({
   status,
   items,
   notice,
-  breathe,
+  breathe: initialBreathe,
+  collapsed: initialCollapsed = false,
 }) => {
   const colorMap = {
     morning: { bg: TC.morningBg, ink: TC.morningInk, dot: TC.morning },
@@ -2379,15 +2748,27 @@ const DoseGroup = ({
   };
   const col = colorMap[tone];
   const isNow = status === "now";
-  const isTaken = status === "taken";
+
+  const [taken, setTaken] = React.useState(
+    items.map(() => Boolean(initialBreathe))
+  );
+  const [expanded, setExpanded] = React.useState(!initialCollapsed);
+  const allChecked = taken.length > 0 && taken.every(Boolean);
+  const breathe = allChecked || Boolean(initialBreathe);
+  const isTaken = status === "taken" || breathe;
+  const showItems = !breathe || expanded;
+
+  const toggleItem = (i) =>
+    setTaken((prev) => prev.map((v, idx) => (idx === i ? !v : v)));
+  const markAll = () => setTaken(items.map(() => true));
 
   return (
     <div
       style={{
-        background: breathe ? TC.safeBg : isNow ? TC.surfaceLowest : TC.surface,
+        background: breathe ? TC.primaryFixed : isNow ? TC.surfaceLowest : TC.surface,
         borderRadius: 22,
         padding: "20px 22px",
-        boxShadow: isNow ? TC.shadowLg : "none",
+        boxShadow: isNow && !breathe ? TC.shadowLg : "none",
         transition: "all 480ms cubic-bezier(0.32, 0.72, 0, 1)",
       }}
     >
@@ -2396,7 +2777,7 @@ const DoseGroup = ({
           display: "flex",
           alignItems: "center",
           gap: 14,
-          marginBottom: items.length ? 14 : 0,
+          marginBottom: items.length && showItems ? 14 : 0,
         }}
       >
         <div
@@ -2404,7 +2785,7 @@ const DoseGroup = ({
             width: 56,
             height: 56,
             borderRadius: 18,
-            background: breathe ? TC.safe : col.bg,
+            background: breathe ? TC.primary : col.bg,
             color: breathe ? "#fff" : col.dot,
             display: "flex",
             alignItems: "center",
@@ -2424,12 +2805,17 @@ const DoseGroup = ({
               style={{
                 fontSize: 24,
                 fontWeight: 700,
-                color: isTaken && !breathe ? TC.inkVariant : TC.ink,
+                fontVariantNumeric: "tabular-nums",
+                color: breathe
+                  ? TC.onPrimaryVar
+                  : isTaken
+                  ? TC.inkFaint
+                  : col.ink,
               }}
             >
-              {label}
+              {time}
             </div>
-            {isNow && (
+            {isNow && !breathe && (
               <span
                 style={{
                   padding: "4px 12px",
@@ -2443,69 +2829,195 @@ const DoseGroup = ({
                 지금
               </span>
             )}
-            {breathe && (
-              <span
-                style={{
-                  padding: "4px 12px",
-                  borderRadius: 9999,
-                  background: TC.safe,
-                  color: "#fff",
-                  fontSize: 14,
-                  fontWeight: 700,
-                }}
-              >
-                완료
-              </span>
-            )}
-          </div>
-          <div
-            style={{
-              fontSize: 22,
-              fontWeight: 700,
-              fontVariantNumeric: "tabular-nums",
-              color: isTaken && !breathe ? TC.inkFaint : col.ink,
-              marginTop: 2,
-            }}
-          >
-            {time}
           </div>
         </div>
-      </div>
-      {items.length > 0 && (
-        <div
-          style={{
-            paddingLeft: 70,
-            display: "flex",
-            flexDirection: "column",
-            gap: 8,
-            opacity: isTaken && !breathe ? 0.6 : 1,
-          }}
-        >
-          {items.map((it, i) => (
-            <div
-              key={i}
+        {breathe && (
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            style={{
+              alignSelf: "stretch",
+              minHeight: 44,
+              padding: "0 10px",
+              background: "transparent",
+              border: "none",
+              borderRadius: 12,
+              cursor: "pointer",
+              fontFamily: "inherit",
+              color: TC.onPrimaryVar,
+              fontSize: 15,
+              fontWeight: 700,
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              flexShrink: 0,
+            }}
+          >
+            {expanded ? "접기" : "상세보기"}
+            <span
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                fontSize: 18,
-                fontWeight: 600,
-                color: isTaken && !breathe ? TC.inkFaint : TC.ink,
-                lineHeight: 1.4,
+                display: "inline-flex",
+                transform: expanded ? "rotate(-90deg)" : "rotate(90deg)",
+                transition: "transform 240ms cubic-bezier(0.32, 0.72, 0, 1)",
               }}
             >
-              <span
+              <Ic name="chev" size={16} color={TC.onPrimaryVar} strokeWidth={3} />
+            </span>
+          </button>
+        )}
+      </div>
+      {items.length > 0 && showItems && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
+          }}
+        >
+          {items.map((it, i) => {
+            const isBag = typeof it === "object" && it.type === "rx-bag";
+            const isSupp =
+              typeof it === "object" &&
+              (it.type === "supp" || it.kind === "supp");
+            const isDrug = typeof it === "object" && it.kind === "drug";
+            const itName = isBag
+              ? it.clinic
+              : typeof it === "string"
+              ? it
+              : it.name;
+            const itDose = isBag
+              ? ""
+              : typeof it === "string"
+              ? ""
+              : it.dose;
+            const checkedItem = taken[i];
+            const tagStyle = isBag
+              ? { bg: TC.primary, fg: "#fff", label: "처방약" }
+              : isSupp
+              ? { bg: TC.surfaceContainer, fg: TC.inkVariant, label: "영양제" }
+              : isDrug
+              ? { bg: TC.primary, fg: "#fff", label: "약" }
+              : null;
+            return (
+              <button
+                key={i}
+                onClick={() => toggleItem(i)}
                 style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: 9999,
-                  background: col.dot,
-                  flexShrink: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                  padding: "14px 16px",
+                  minHeight: 64,
+                  width: "100%",
+                  background: breathe ? TC.surfaceLowest : TC.surfaceLow,
+                  border: "none",
+                  borderRadius: 16,
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  textAlign: "left",
+                  transition: "all 240ms cubic-bezier(0.32, 0.72, 0, 1)",
                 }}
-              />
-              {it}
-            </div>
-          ))}
+              >
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 20,
+                        fontWeight: 700,
+                        color: checkedItem ? TC.inkFaint : TC.ink,
+                        lineHeight: 1.3,
+                      }}
+                    >
+                      {itName}
+                    </div>
+                    {tagStyle && (
+                      <span
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 700,
+                          padding: "3px 8px",
+                          borderRadius: 8,
+                          background: tagStyle.bg,
+                          color: tagStyle.fg,
+                          flexShrink: 0,
+                          opacity: checkedItem ? 0.6 : 1,
+                        }}
+                      >
+                        {tagStyle.label}
+                      </span>
+                    )}
+                  </div>
+                  {isBag ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: 6,
+                        flexWrap: "wrap",
+                        marginTop: 8,
+                      }}
+                    >
+                      {it.contents.map((medName, mi) => (
+                        <span
+                          key={mi}
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 600,
+                            padding: "4px 10px",
+                            borderRadius: 9999,
+                            background: col.bg,
+                            color: col.ink,
+                            opacity: checkedItem ? 0.55 : 1,
+                          }}
+                        >
+                          {medName}
+                        </span>
+                      ))}
+                    </div>
+                  ) : itDose ? (
+                    <div
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 600,
+                        color: TC.inkFaint,
+                        marginTop: 2,
+                      }}
+                    >
+                      {itDose}
+                    </div>
+                  ) : null}
+                </div>
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 9999,
+                    background: checkedItem ? TC.primary : "transparent",
+                    border: checkedItem
+                      ? "none"
+                      : `2.5px dashed ${TC.primaryFixedDim}`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    transition: "all 240ms cubic-bezier(0.32, 0.72, 0, 1)",
+                  }}
+                >
+                  <Ic
+                    name="check"
+                    size={22}
+                    color={checkedItem ? "#fff" : TC.primaryDim}
+                    strokeWidth={3.5}
+                  />
+                </div>
+              </button>
+            );
+          })}
         </div>
       )}
       {notice && !isTaken && (
@@ -2528,21 +3040,22 @@ const DoseGroup = ({
           {notice}
         </div>
       )}
-      {isNow && (
+      {isNow && !allChecked && showItems && (
         <button
+          onClick={markAll}
           style={{
-            marginTop: 16,
+            marginTop: 14,
             width: "100%",
+            minHeight: 64,
             padding: "18px",
             borderRadius: 9999,
             border: "none",
-            background: TC.gradientHero,
-            color: "#fff",
+            background: TC.primaryFixed,
+            color: TC.primary,
             fontSize: 20,
             fontWeight: 700,
             fontFamily: "inherit",
             cursor: "pointer",
-            boxShadow: "0 8px 22px rgba(95,58,221,0.32)",
           }}
         >
           모두 먹었어요
@@ -2552,177 +3065,361 @@ const DoseGroup = ({
   );
 };
 
-const S_StockCheck = () => (
-  <Shell>
-    <div style={{ height: 60, background: TC.surfaceLow }} />
-    <div
-      style={{
-        position: "absolute",
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: TC.surfaceLowest,
-        borderRadius: "28px 28px 0 0",
-        boxShadow: "0 -20px 56px rgba(95,58,221,0.18)",
-        padding: "18px 24px 28px",
-        maxHeight: "92%",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <div
-        style={{
-          width: 44,
-          height: 5,
-          borderRadius: 9999,
-          background: TC.surfaceContainerHigh,
-          margin: "0 auto 20px",
-        }}
-      />
+const S_StockCheck = () => {
+  const groups = [
+    {
+      type: "rx",
+      date: "5월 10일",
+      clinic: "사랑내과",
+      daysEst: 4,
+      meds: ["아스피린", "아토르바스타틴", "메트포르민"],
+      unit: "일치",
+    },
+    {
+      type: "supp",
+      name: "오메가3",
+      countEst: 25,
+      bottleSize: 60,
+      unit: "정",
+    },
+  ];
+  const [statuses, setStatuses] = React.useState(groups.map(() => "pending"));
+  const [values, setValues] = React.useState(
+    groups.map((g) => (g.type === "rx" ? g.daysEst : g.countEst))
+  );
 
-      <Pill tone="primary" big>
-        <Ic name="pill" size={16} /> 일요일마다 확인해요
-      </Pill>
-      <h3
-        style={{
-          fontSize: 26,
-          fontWeight: 700,
-          letterSpacing: -0.4,
-          margin: "14px 0 8px",
-          lineHeight: 1.25,
-        }}
-      >
-        지금 약이
-        <br />몇 정 남았나요?
-      </h3>
-      <p
-        style={{
-          fontSize: 17,
-          color: TC.inkVariant,
-          margin: "0 0 22px",
-          lineHeight: 1.5,
-        }}
-      >
-        약통을 한 번 보시고 알려주세요
-      </p>
+  const setStatus = (i, s) =>
+    setStatuses((prev) => prev.map((v, idx) => (idx === i ? s : v)));
+  const adjust = (i, delta) =>
+    setValues((prev) =>
+      prev.map((v, idx) => (idx === i ? Math.max(0, v + delta) : v))
+    );
 
+  return (
+    <Shell bg={TC.surfaceLowest}>
+      <TopBar title="잔여 점검" />
       <div
         style={{
           flex: 1,
-          overflow: "auto",
+          padding: "8px 24px 28px",
           display: "flex",
           flexDirection: "column",
-          gap: 12,
         }}
       >
-        {[
-          { name: "아스피린", est: 3, val: 8, low: false },
-          { name: "아토르바스타틴", est: 18, val: 18 },
-          { name: "메트포르민", est: 24, val: 24 },
-        ].map((m, i) => (
-          <Card
-            key={i}
-            style={{
-              padding: "18px 20px",
-              boxShadow: m.low ? "0 0 0 2px " + TC.danger : TC.shadow,
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 14,
-                marginBottom: 14,
-              }}
-            >
-              <div
+
+        <h3
+          style={{
+            fontSize: 24,
+            fontWeight: 700,
+            letterSpacing: -0.4,
+            margin: "0 0 6px",
+            lineHeight: 1.3,
+          }}
+        >
+          지금까지 드신 약,
+          <br />중간 점검해 볼게요
+        </h3>
+        <p
+          style={{
+            fontSize: 17,
+            color: TC.inkVariant,
+            margin: "0 0 18px",
+            lineHeight: 1.5,
+          }}
+        >
+          약통을 한 번 보시고 맞는지 확인해 주세요
+        </p>
+
+        <div
+          style={{
+            flex: 1,
+            overflow: "auto",
+            display: "flex",
+            flexDirection: "column",
+            gap: 12,
+          }}
+        >
+          {groups.map((g, i) => {
+            const status = statuses[i];
+            const value = values[i];
+            const isOk = status === "ok";
+            const isEdit = status === "edit";
+            const isRx = g.type === "rx";
+
+            const title = isRx ? `${g.date} · ${g.clinic}` : g.name;
+            const summary = isRx
+              ? `${value}일치 남았어요`
+              : `한 통에 ${value}정 남았어요`;
+            const editPrompt = isRx
+              ? "약봉지 남은 일수를 알려주세요"
+              : "통 안 알약을 세어 알려주세요";
+            const editSubject = isRx ? "일치" : "정";
+            const tagLabel = isRx ? "처방약" : "영양제";
+            const tagBg = isRx ? TC.primaryFixed : TC.surfaceContainer;
+            const tagFg = isRx ? TC.primary : TC.inkVariant;
+
+            return (
+              <Card
+                key={i}
                 style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 12,
-                  background: TC.primaryFixed,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  padding: "16px 18px",
+                  boxShadow: isOk ? "none" : TC.shadow,
+                  background: isOk ? TC.primaryFixed : TC.surfaceLowest,
+                  transition: "all 240ms cubic-bezier(0.32, 0.72, 0, 1)",
                 }}
               >
-                <Ic name="pill" size={22} color={TC.primary} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 20, fontWeight: 700 }}>{m.name}</div>
                 <div
-                  style={{ fontSize: 15, color: TC.inkVariant, marginTop: 2 }}
-                >
-                  앱 기록: {m.est}정
-                </div>
-              </div>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <button
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 9999,
-                  background: TC.surfaceContainer,
-                  color: TC.ink,
-                  border: "none",
-                  fontSize: 24,
-                  fontWeight: 700,
-                  fontFamily: "inherit",
-                  cursor: "pointer",
-                }}
-              >
-                −
-              </button>
-              <div
-                style={{
-                  flex: 1,
-                  textAlign: "center",
-                  fontSize: 36,
-                  fontWeight: 700,
-                  fontVariantNumeric: "tabular-nums",
-                  color: TC.ink,
-                }}
-              >
-                {m.val}
-                <span
                   style={{
-                    fontSize: 18,
-                    color: TC.inkVariant,
-                    fontWeight: 600,
-                    marginLeft: 4,
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 12,
                   }}
                 >
-                  정
-                </span>
-              </div>
-              <button
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 9999,
-                  background: TC.primary,
-                  color: "#fff",
-                  border: "none",
-                  fontSize: 24,
-                  fontWeight: 700,
-                  fontFamily: "inherit",
-                  cursor: "pointer",
-                }}
-              >
-                +
-              </button>
-            </div>
-          </Card>
-        ))}
-      </div>
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 12,
+                      background: isOk ? TC.primary : TC.primaryFixed,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {isOk ? (
+                      <Ic name="check" size={22} color="#fff" strokeWidth={3} />
+                    ) : (
+                      <Ic
+                        name={isRx ? "doc" : "pill"}
+                        size={22}
+                        color={TC.primary}
+                      />
+                    )}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <div style={{ fontSize: 19, fontWeight: 700 }}>
+                        {title}
+                      </div>
+                      <span
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 700,
+                          padding: "2px 7px",
+                          borderRadius: 6,
+                          background: tagBg,
+                          color: tagFg,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {tagLabel}
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 20,
+                        fontWeight: 700,
+                        color: isOk ? TC.onPrimaryVar : TC.primary,
+                        marginTop: 4,
+                        fontVariantNumeric: "tabular-nums",
+                      }}
+                    >
+                      {summary}
+                    </div>
+                    {isRx && !isOk && (
+                      <div
+                        style={{
+                          fontSize: 14,
+                          color: TC.inkFaint,
+                          marginTop: 4,
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        {g.meds.join(" · ")}
+                      </div>
+                    )}
+                  </div>
+                  {isOk && (
+                    <button
+                      onClick={() => setStatus(i, "pending")}
+                      style={{
+                        minHeight: 44,
+                        padding: "0 14px",
+                        background: "transparent",
+                        border: "none",
+                        color: TC.onPrimaryVar,
+                        fontSize: 16,
+                        fontWeight: 700,
+                        fontFamily: "inherit",
+                        cursor: "pointer",
+                        flexShrink: 0,
+                      }}
+                    >
+                      수정
+                    </button>
+                  )}
+                </div>
 
-      <div style={{ marginTop: 14 }}>
-        <BigButton>저장</BigButton>
+                {!isOk && !isEdit && (
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 10,
+                      marginTop: 14,
+                    }}
+                  >
+                    <button
+                      onClick={() => setStatus(i, "ok")}
+                      style={{
+                        flex: 2,
+                        minHeight: 56,
+                        background: TC.primary,
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 9999,
+                        fontSize: 18,
+                        fontWeight: 700,
+                        fontFamily: "inherit",
+                        cursor: "pointer",
+                      }}
+                    >
+                      맞아요
+                    </button>
+                    <button
+                      onClick={() => setStatus(i, "edit")}
+                      style={{
+                        flex: 3,
+                        minHeight: 56,
+                        background: TC.primaryFixed,
+                        color: TC.primary,
+                        border: "none",
+                        borderRadius: 9999,
+                        fontSize: 17,
+                        fontWeight: 700,
+                        fontFamily: "inherit",
+                        cursor: "pointer",
+                      }}
+                    >
+                      다시 세어볼게요
+                    </button>
+                  </div>
+                )}
+
+                {isEdit && (
+                  <div style={{ marginTop: 14 }}>
+                    <div
+                      style={{
+                        fontSize: 15,
+                        color: TC.inkVariant,
+                        marginBottom: 10,
+                      }}
+                    >
+                      {editPrompt}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                        background: TC.surfaceLow,
+                        borderRadius: 16,
+                        padding: "10px 14px",
+                      }}
+                    >
+                      <button
+                        onClick={() => adjust(i, -1)}
+                        style={{
+                          width: 52,
+                          height: 52,
+                          borderRadius: 9999,
+                          background: TC.surfaceLowest,
+                          color: TC.ink,
+                          border: "none",
+                          fontSize: 28,
+                          fontWeight: 700,
+                          fontFamily: "inherit",
+                          cursor: "pointer",
+                          boxShadow: TC.shadow,
+                        }}
+                      >
+                        −
+                      </button>
+                      <div
+                        style={{
+                          flex: 1,
+                          textAlign: "center",
+                          fontSize: 32,
+                          fontWeight: 700,
+                          fontVariantNumeric: "tabular-nums",
+                          color: TC.ink,
+                        }}
+                      >
+                        {value}
+                        <span
+                          style={{
+                            fontSize: 17,
+                            color: TC.inkVariant,
+                            fontWeight: 600,
+                            marginLeft: 4,
+                          }}
+                        >
+                          {editSubject}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => adjust(i, 1)}
+                        style={{
+                          width: 52,
+                          height: 52,
+                          borderRadius: 9999,
+                          background: TC.primary,
+                          color: "#fff",
+                          border: "none",
+                          fontSize: 28,
+                          fontWeight: 700,
+                          fontFamily: "inherit",
+                          cursor: "pointer",
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => setStatus(i, "ok")}
+                      style={{
+                        marginTop: 10,
+                        width: "100%",
+                        minHeight: 56,
+                        background: TC.primary,
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 9999,
+                        fontSize: 18,
+                        fontWeight: 700,
+                        fontFamily: "inherit",
+                        cursor: "pointer",
+                      }}
+                    >
+                      확인
+                    </button>
+                  </div>
+                )}
+              </Card>
+            );
+          })}
+        </div>
       </div>
-    </div>
-  </Shell>
-);
+    </Shell>
+  );
+};
 
 const S_DosePush = () => (
   <div style={{ width: '100%', height: '100%', position: 'relative',
@@ -2925,11 +3622,11 @@ const S_IntakeCalendar = () => {
 // =============================================================
 // S_Cabinet — '내 약' 탭 메인 page
 // props:
-//   empty: true → 빈 상태 (mode 무시)
-//   mode:  'list' (default) | 'calendar' (S_IntakeCalendar 흡수)
+//   empty: true → 빈 상태
+// 달력 모드는 S_Today 헤더의 월간 expand로 이전됨 (mode prop 폐지)
 // =============================================================
 
-const S_Cabinet = ({ empty = false, mode = 'list' }) => {
+const S_Cabinet = ({ empty = false }) => {
   if (empty) {
     return (
       <Shell>
@@ -2970,182 +3667,20 @@ const S_Cabinet = ({ empty = false, mode = 'list' }) => {
     </div>
   );
 
-  const Toggle = () => (
-    <div style={{ padding: '0 20px 16px' }}>
-      <div style={{ display: 'flex', background: TC.surfaceContainer,
-        borderRadius: 9999, padding: 4 }}>
-        {[
-          { id: 'list', label: '목록' },
-          { id: 'calendar', label: '달력' },
-        ].map(t => {
-          const a = mode === t.id;
-          return (
-            <div key={t.id} style={{ flex: 1, padding: '11px 0',
-              borderRadius: 9999, textAlign: 'center',
-              fontSize: 16, fontWeight: 700,
-              background: a ? TC.surfaceLowest : 'transparent',
-              color: a ? TC.primary : TC.inkVariant,
-              boxShadow: a ? '0 2px 6px rgba(17,24,39,0.06)' : 'none' }}>
-              {t.label}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-
-  // ---------- mode='calendar' (S_IntakeCalendar 마크업 흡수) ----------
-  if (mode === 'calendar') {
-    const days = [
-      { d: 1,  st: 'done' }, { d: 2,  st: 'done' }, { d: 3,  st: 'done' },
-      { d: 4,  st: 'partial' }, { d: 5,  st: 'partial' },
-      { d: 6,  st: 'done' }, { d: 7,  st: 'done' }, { d: 8, st: 'partial' },
-      { d: 9,  st: 'done' }, { d: 10, st: 'done' }, { d: 11, st: 'done' },
-      { d: 12, st: 'done' }, { d: 13, st: 'done' }, { d: 14, st: 'done' },
-    ];
-    const blanks = 3;
-    const stColor = {
-      done:    { bg: TC.safeBg,    emoji: '😊', text: TC.safe },
-      partial: { bg: TC.warningBg, emoji: '😐', text: TC.onWarning },
-      future:  { bg: TC.surfaceContainer, emoji: '·', text: TC.inkFaint },
-    };
-
-    return (
-      <Shell>
-        <div style={{ display: 'flex', alignItems: 'center',
-          padding: '14px 20px 12px' }}>
-          <span style={{ fontSize: 19, fontWeight: 700, color: TC.ink }}>
-            내 약
-          </span>
-          {PlusBtn}
-        </div>
-        <Toggle />
-
-        <div style={{ padding: '0 24px 8px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6,
-            fontSize: 22, fontWeight: 700, color: TC.ink }}>
-            5월 <span style={{ fontSize: 14, color: TC.inkVariant }}>▾</span>
-          </div>
-        </div>
-
-        <div style={{ padding: '0 24px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: 6, marginBottom: 6 }}>
-            {['월','화','수','목','금','토','일'].map(d => (
-              <div key={d} style={{ textAlign: 'center', fontSize: 14,
-                fontWeight: 700, color: TC.inkVariant, padding: '4px 0' }}>
-                {d}
-              </div>
-            ))}
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: 6 }}>
-            {Array.from({ length: blanks }).map((_, i) => (
-              <div key={`b${i}`} style={{ aspectRatio: '1' }} />
-            ))}
-            {days.map(({ d, st }) => {
-              const c = stColor[st];
-              return (
-                <div key={d} style={{ aspectRatio: '1',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 9999,
-                    background: c.bg,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 20, lineHeight: 1 }}>
-                    {c.emoji}
-                  </div>
-                </div>
-              );
-            })}
-            <div style={{ aspectRatio: '1',
-              display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ width: 40, height: 40, borderRadius: 9999,
-                background: '#fff',
-                border: `2.5px solid ${TC.primary}`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 18, fontWeight: 700, color: TC.primary }}>
-                15
-              </div>
-            </div>
-            {[16,17,18].map(d => (
-              <div key={d} style={{ aspectRatio: '1',
-                display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ width: 36, height: 36, borderRadius: 9999,
-                  background: TC.surfaceContainer,
-                  fontSize: 16, fontWeight: 600, color: TC.inkFaint,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {d}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div style={{ margin: '20px 24px 0', padding: '16px 20px',
-          background: TC.primaryFixed, borderRadius: 22,
-          display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 24 }}>🔥</span>
-          <div style={{ fontSize: 18, fontWeight: 700, color: TC.primary }}>
-            5일째 연속 섭취중
-          </div>
-        </div>
-
-        <div style={{ padding: '20px 24px 110px', flex: 1, overflow: 'auto' }}>
-          <div style={{ fontSize: 22, fontWeight: 700, color: TC.ink,
-            marginBottom: 14 }}>
-            5월 2일 금요일 <span style={{ color: TC.inkVariant, fontWeight: 500,
-              fontSize: 17 }}>(오늘)</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {[
-              { tone: 'morning', label: '아침', time: '오전 8:30',  st: 'taken' },
-              { tone: 'noon',    label: '점심', time: '오후 12:30', st: 'taken' },
-              { tone: 'evening', label: '저녁', time: '오후 7:00',  st: 'now' },
-            ].map((r, i) => {
-              const cmap = {
-                morning: { bg: TC.morningBg, dot: TC.morning, ink: TC.morningInk },
-                noon:    { bg: TC.noonBg,    dot: TC.noon,    ink: TC.noonInk },
-                evening: { bg: TC.eveningBg, dot: TC.evening, ink: TC.eveningInk },
-              }[r.tone];
-              return (
-                <div key={i} style={{ display: 'flex', alignItems: 'center',
-                  gap: 12, padding: '12px 14px',
-                  background: cmap.bg, borderRadius: 14 }}>
-                  <div style={{ width: 10, height: 10, borderRadius: 9999,
-                    background: cmap.dot, flexShrink: 0 }} />
-                  <div style={{ flex: 1, fontSize: 17, fontWeight: 700,
-                    color: cmap.ink }}>
-                    {r.label}
-                  </div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: cmap.ink,
-                    fontVariantNumeric: 'tabular-nums' }}>
-                    {r.time}
-                  </div>
-                  <div style={{ fontSize: 14, fontWeight: 700,
-                    padding: '4px 10px', borderRadius: 9999,
-                    background: r.st === 'taken' ? TC.safe : TC.primary,
-                    color: '#fff' }}>
-                    {r.st === 'taken' ? '✓' : '진행'}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <TabBar active="meds" />
-      </Shell>
-    );
-  }
-
-  // ---------- mode='list' (default) ----------
+  // ---------- 약 목록 (단일 모드 — 달력은 S_Today 헤더로 이전) ----------
   const MEDS = {
     prescription: {
-      label: '처방약', emoji: '💊',
-      items: [
-        { name: '아스피린 100mg',      dose: '1정 · 식후', time: ['아침'] },
-        { name: '아토르바스타틴 10mg', dose: '1정',         time: ['저녁'] },
-        { name: '메트포르민 500mg',    dose: '1정',         time: ['아침','저녁'] },
+      label: '처방약', emoji: '💊', isRxGroup: true,
+      groups: [
+        {
+          date: '5월 10일',
+          clinic: '사랑내과',
+          items: [
+            { name: '아스피린 100mg',      dose: '1정 · 식후', time: ['아침'] },
+            { name: '아토르바스타틴 10mg', dose: '1정',         time: ['저녁'] },
+            { name: '메트포르민 500mg',    dose: '1정',         time: ['아침','저녁'] },
+          ],
+        },
       ],
     },
     otc: {
@@ -3189,23 +3724,71 @@ const S_Cabinet = ({ empty = false, mode = 'list' }) => {
     </Card>
   );
 
-  const renderGroup = (key, g) => (
-    <div key={key} style={{ marginBottom: 24 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8,
-        marginBottom: 10, padding: '0 4px' }}>
-        <span style={{ fontSize: 18 }}>{g.emoji}</span>
-        <span style={{ fontSize: 17, fontWeight: 700, color: TC.inkVariant }}>
-          {g.label}
+  const renderRxSupercard = (rx, i) => (
+    <Card key={i} raised={true} style={{ padding: 0, overflow: 'hidden' }}>
+      <button
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          padding: '16px 18px',
+          background: 'transparent',
+          border: 'none',
+          fontFamily: 'inherit',
+          textAlign: 'left',
+          cursor: 'pointer',
+        }}
+      >
+        <div style={{ width: 36, height: 36, borderRadius: 10,
+          background: TC.primaryFixed,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0 }}>
+          <Ic name="doc" size={20} color={TC.primary} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 17, fontWeight: 700, color: TC.ink,
+            letterSpacing: -0.2 }}>
+            {rx.date} · {rx.clinic}
+          </div>
+          <div style={{ fontSize: 13, color: TC.inkFaint, marginTop: 2 }}>
+            약 {rx.items.length}가지 · 상세 보기
+          </div>
+        </div>
+        <span style={{ fontSize: 12, fontWeight: 700,
+          padding: '3px 9px', borderRadius: 8,
+          background: TC.primary, color: '#fff', flexShrink: 0 }}>
+          처방약
         </span>
-        <span style={{ fontSize: 15, fontWeight: 600, color: TC.inkFaint }}>
-          ({g.items.length})
-        </span>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {g.items.map(renderCard)}
-      </div>
-    </div>
+        <Ic name="chev" size={18} color={TC.inkFaint} strokeWidth={2.5} />
+      </button>
+    </Card>
   );
+
+  const renderGroup = (key, g) => {
+    const totalCount = g.isRxGroup
+      ? g.groups.reduce((n, rx) => n + rx.items.length, 0)
+      : g.items.length;
+    return (
+      <div key={key} style={{ marginBottom: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8,
+          marginBottom: 10, padding: '0 4px' }}>
+          <span style={{ fontSize: 18 }}>{g.emoji}</span>
+          <span style={{ fontSize: 17, fontWeight: 700, color: TC.inkVariant }}>
+            {g.label}
+          </span>
+          <span style={{ fontSize: 15, fontWeight: 600, color: TC.inkFaint }}>
+            ({totalCount})
+          </span>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {g.isRxGroup
+            ? g.groups.map(renderRxSupercard)
+            : g.items.map(renderCard)}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <Shell>
@@ -3216,12 +3799,119 @@ const S_Cabinet = ({ empty = false, mode = 'list' }) => {
         </span>
         {PlusBtn}
       </div>
-      <Toggle />
       <div style={{ flex: 1, overflow: 'auto', padding: '0 20px 110px' }}>
         {Object.entries(MEDS).map(([k, g]) => renderGroup(k, g))}
       </div>
       <TabBar active="meds" />
     </Shell>
+  );
+};
+
+// =============================================================
+// S_RxDetail — 처방 상세 모달
+// 내 약 탭의 처방 supercard 탭 시 노출. 처방일·병원 + 약별 시간대·dose 풀 정보
+// =============================================================
+
+const S_RxDetail = () => {
+  const rx = {
+    date: '5월 10일',
+    clinic: '사랑내과',
+    items: [
+      { name: '아스피린 100mg',      dose: '1정 · 식후', time: ['아침'] },
+      { name: '아토르바스타틴 10mg', dose: '1정',         time: ['저녁'] },
+      { name: '메트포르민 500mg',    dose: '1정',         time: ['아침','저녁'] },
+    ],
+  };
+  const timeToTone = (t) => (
+    { '아침': 'morning', '점심': 'noon', '저녁': 'evening' }[t] || 'neutral'
+  );
+
+  return (
+    <div style={{
+      position: 'absolute', inset: 0,
+      background: 'rgba(17,24,39,0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '40px 16px',
+    }}>
+      <div style={{
+        width: '100%',
+        maxHeight: '90%',
+        background: TC.surfaceLowest,
+        borderRadius: 28,
+        boxShadow: '0 20px 60px rgba(17,24,39,0.3)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          padding: '20px 22px 16px',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 12,
+          borderBottom: `1px solid ${TC.outline}`,
+        }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: 12,
+            background: TC.primaryFixed,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}>
+            <Ic name="doc" size={24} color={TC.primary} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <span style={{
+              display: 'inline-block',
+              fontSize: 12, fontWeight: 700,
+              padding: '3px 9px', borderRadius: 8,
+              background: TC.primary, color: '#fff',
+              marginBottom: 6,
+            }}>처방약</span>
+            <div style={{ fontSize: 20, fontWeight: 700, color: TC.ink, letterSpacing: -0.3 }}>
+              {rx.date} · {rx.clinic}
+            </div>
+            <div style={{ fontSize: 14, color: TC.inkFaint, marginTop: 2 }}>
+              약 {rx.items.length}가지
+            </div>
+          </div>
+          <button style={{
+            width: 36, height: 36, borderRadius: 9999,
+            background: TC.surfaceContainer, border: 'none',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', flexShrink: 0,
+            fontSize: 18, fontWeight: 700, fontFamily: 'inherit',
+            color: TC.ink, lineHeight: 1,
+          }}>
+            ✕
+          </button>
+        </div>
+
+        <div style={{ flex: 1, overflow: 'auto', padding: '14px 22px 22px' }}>
+          {rx.items.map((m, i) => (
+            <div key={i} style={{
+              paddingTop: i > 0 ? 14 : 4,
+              paddingBottom: 14,
+              borderTop: i > 0 ? `1px solid ${TC.outline}` : 'none',
+            }}>
+              <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+                {m.time.map((t, k) => (
+                  <Pill key={k} tone={timeToTone(t)}>{t}</Pill>
+                ))}
+              </div>
+              <div style={{ fontSize: 19, fontWeight: 700, color: TC.ink, letterSpacing: -0.2 }}>
+                {m.name}
+              </div>
+              <div style={{ fontSize: 15, color: TC.inkVariant, marginTop: 4 }}>
+                {m.dose}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -4734,6 +5424,7 @@ window.YS = {
   S_DosePush,
   S_Today,
   S_Cabinet,
+  S_RxDetail,
   S_IntakeCalendar,
   S_StockCheck,
   S_ShareSetup,
