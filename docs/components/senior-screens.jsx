@@ -2751,7 +2751,22 @@ const S_AddNote = ({ kind = "recommendation" }) => {
 // S_RegDone — 등록 완료 화면 (등록 flow 마지막 step)
 // =============================================================
 
-const S_RegDone = () => (
+const S_RegDone = ({ state = "done" }) => {
+  const isSaving = state === "saving";
+  const isError = state === "error";
+  const iconName = isError ? "alert" : "check";
+  const iconBg = isError ? TC.danger : TC.gradientHero;
+  const title = isSaving
+    ? "저장하고 있어요"
+    : isError
+      ? "저장이 잘 안 됐어요"
+      : "저장이 완료됐어요";
+  const body = isSaving
+    ? "중복 저장을 막으면서\n약통에 보내고 있어요"
+    : isError
+      ? "입력한 내용은 그대로 두고\n다시 시도할 수 있어요"
+      : "오늘 약속에서 바로\n드시면 돼요";
+  return (
   <Shell>
     <div
       style={{
@@ -2780,14 +2795,20 @@ const S_RegDone = () => (
           width: 132,
           height: 132,
           borderRadius: 9999,
-          background: TC.gradientHero,
+          background: iconBg,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           boxShadow: "0 18px 48px rgba(95,58,221,0.32)",
         }}
       >
-        <Ic name="check" size={64} color="#fff" strokeWidth={3.2} />
+        {isSaving ? (
+          <div style={{ width: 70, height: 70, borderRadius: 9999,
+            border: "6px solid rgba(255,255,255,0.45)",
+            borderTopColor: "#fff" }} />
+        ) : (
+          <Ic name={iconName} size={64} color="#fff" strokeWidth={3.2} />
+        )}
       </div>
       <div style={{ textAlign: "center" }}>
         <h2
@@ -2800,7 +2821,7 @@ const S_RegDone = () => (
             color: TC.ink,
           }}
         >
-          저장이 완료됐어요
+          {title}
         </h2>
         <p
           style={{
@@ -2808,11 +2829,28 @@ const S_RegDone = () => (
             color: TC.inkVariant,
             lineHeight: 1.55,
             margin: 0,
+            whiteSpace: "pre-line",
           }}
         >
-          오늘 약속에서 바로<br />드시면 돼요
+          {body}
         </p>
       </div>
+      {(isSaving || isError) && (
+        <Card raised={false} style={{ width: "100%",
+          background: isError ? TC.dangerBg : TC.primaryFixed,
+          border: `1px solid ${isError ? "#fecaca" : TC.primaryFixedDim}` }}>
+          <div style={{ fontSize: 20, fontWeight: 800,
+            color: isError ? TC.onDanger : TC.onPrimaryVar, marginBottom: 6 }}>
+            {isError ? "같은 내용은 한 번만 보냅니다" : "요청 번호를 붙여 보내는 중"}
+          </div>
+          <div style={{ fontSize: 17, lineHeight: 1.45,
+            color: isError ? TC.onDanger : TC.onPrimaryVar, fontWeight: 600 }}>
+            {isError
+              ? "재시도해도 같은 약이 두 번 생기지 않게 처리합니다"
+              : "저장 버튼을 다시 눌러도 같은 요청으로 묶습니다"}
+          </div>
+        </Card>
+      )}
     </div>
     <div
       style={{
@@ -2824,13 +2862,32 @@ const S_RegDone = () => (
         zIndex: 1,
       }}
     >
-      <BigButton variant="solid">오늘 약속 보러 가기</BigButton>
-      <BigButton variant="ghost" style={{ minHeight: 56 }}>
-        약통 둘러보기
-      </BigButton>
+      {isSaving ? (
+        <React.Fragment>
+          <BigButton variant="soft">저장 요청 보내는 중</BigButton>
+          <BigButton variant="ghost" style={{ minHeight: 56 }}>
+            잠시만 기다릴게요
+          </BigButton>
+        </React.Fragment>
+      ) : isError ? (
+        <React.Fragment>
+          <BigButton variant="solid">다시 시도</BigButton>
+          <BigButton variant="ghost" style={{ minHeight: 56 }}>
+            입력 내용으로 돌아가기
+          </BigButton>
+        </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <BigButton variant="solid">오늘 약속 보러 가기</BigButton>
+          <BigButton variant="ghost" style={{ minHeight: 56 }}>
+            약통 둘러보기
+          </BigButton>
+        </React.Fragment>
+      )}
     </div>
   </Shell>
-);
+  );
+};
 
 const S_DoseNotice = () => (
   <Shell>

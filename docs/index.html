@@ -347,6 +347,10 @@ const flows = {
     { title: '시간 변경 (시트)', desc: '아침 시간 — wheel picker',     time: '9:46', comp: () => <Y.S_TimeSheet kind="med" slot="아침" /> },
     { title: '요일 변경 (시트)', desc: '약봉지 30일분 — 매일 default', time: '9:46', comp: () => <Y.S_DaySheet kind="med" /> },
     { title: '권고사항 입력',    desc: '약사·의사 권고 (음성 보조)',   time: '9:47', comp: () => <Y.S_AddNote kind="recommendation" /> },
+    { title: '저장 중',          desc: '중복 요청 방지',               time: '9:48',
+      comp: () => <Y.S_RegDone state="saving" /> },
+    { title: '저장 실패',        desc: '같은 내용 재시도',             time: '9:48',
+      comp: () => <Y.S_RegDone state="error" /> },
     { title: '등록 완료',        desc: '저장 완료 — 오늘 약속·약통 진입', time: '9:48', comp: Y.S_RegDone },
   ],
   s_mymeds_reg_supp: [
@@ -370,6 +374,10 @@ const flows = {
     { title: '시간 변경 (시트)', desc: '저녁 시간 — wheel picker',     time: '14:28', comp: () => <Y.S_TimeSheet kind="supp" slot="저녁" /> },
     { title: '요일 변경 (시트)', desc: '매일/평일/격일/사용자 정의',   time: '14:29', comp: () => <Y.S_DaySheet kind="supp" /> },
     { title: '메모',             desc: '개인 메모 (본인만 열람)',      time: '14:30', comp: () => <Y.S_AddNote kind="memo" /> },
+    { title: '저장 중',          desc: '중복 요청 방지',               time: '14:31',
+      comp: () => <Y.S_RegDone state="saving" /> },
+    { title: '저장 실패',        desc: '같은 내용 재시도',             time: '14:31',
+      comp: () => <Y.S_RegDone state="error" /> },
     { title: '등록 완료',        desc: '저장 완료 — 오늘 약속·약통 진입', time: '14:31', comp: Y.S_RegDone },
   ],
 
