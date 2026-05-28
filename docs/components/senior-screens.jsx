@@ -847,7 +847,8 @@ const S_SelectedEmpty = () => (
 
 const SelectedListCore = ({ editable = false }) => {
   const items = [
-    { brand: '나우푸드',     name: '비타민D-3 3000IU', dose: '1캡슐',
+    { brand: '나우푸드',     name: '비타민D-3 3000IU',
+      dose: editable ? '0.5캡슐' : '1캡슐',
       bg: 'linear-gradient(135deg, #ffe7c2, #ffc888)', initial: 'NOW',
       ink: '#7a4a1a' },
     { brand: '닥터스베스트', name: '킬레이트 마그네슘', dose: '4정',
@@ -933,6 +934,24 @@ const SelectedListCore = ({ editable = false }) => {
             </div>
           </div>
         ))}
+        {editable && (
+          <Card raised={false} style={{ background: TC.primaryFixed,
+            border: `1px solid ${TC.primaryFixedDim}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <Ic name="check-c" size={28} color={TC.primary} />
+              <div>
+                <div style={{ fontSize: 20, fontWeight: 800,
+                  color: TC.ink, marginBottom: 4 }}>
+                  섭취량을 바꿨어요
+                </div>
+                <div style={{ fontSize: 17, lineHeight: 1.45,
+                  color: TC.onPrimaryVar, fontWeight: 600 }}>
+                  저장 전 선택 목록에 바로 반영됩니다
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
       </div>
       <div style={{ padding: '14px 24px 24px' }}>
         <BigButton>다음</BigButton>
@@ -944,7 +963,13 @@ const SelectedListCore = ({ editable = false }) => {
 const S_SelectedList = () => <SelectedListCore editable={false} />;
 const S_SelectedEdit = () => <SelectedListCore editable={true} />;
 
-const S_DoseSheet = () => (
+const S_DoseSheet = ({ selected = "1" }) => {
+  const doses = [
+    { value: "0.5", label: "0.5", hint: "2일에 1캡슐" },
+    { value: "1", label: "1", hint: "제품 권장량" },
+    { value: "1.5", label: "1.5", hint: "조금 더 드실 때" },
+  ];
+  return (
   <Shell>
     <div style={{ position: 'absolute', inset: 0, background: TC.surfaceLow }} />
     <div style={{ position: 'absolute', inset: 0,
@@ -971,28 +996,30 @@ const S_DoseSheet = () => (
         (예시: 1일 2회 2캡슐 = 4캡슐)
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <div style={{ padding: '14px 0', textAlign: 'center',
-          fontSize: 22, color: TC.inkFaint, fontWeight: 600,
-          opacity: 0.55 }}>
-          0.5 (2일에 1캡슐)
-        </div>
-        <div style={{
-          padding: '14px 24px',
-          background: TC.primaryFixed, borderRadius: 24,
-          display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          <div style={{ fontSize: 28, fontWeight: 700, color: TC.ink }}>1</div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: TC.primary }}>
-            제품 권장량
-          </div>
-        </div>
-        <div style={{ padding: '14px 0', textAlign: 'center',
-          fontSize: 22, color: TC.inkFaint, fontWeight: 600,
-          opacity: 0.55 }}>
-          1.5
-        </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {doses.map((dose) => {
+          const active = selected === dose.value;
+          return (
+            <div key={dose.value} style={{
+              padding: active ? '14px 24px' : '14px 0',
+              background: active ? TC.primaryFixed : 'transparent',
+              borderRadius: 24,
+              display: 'flex', alignItems: 'center',
+              justifyContent: active ? 'space-between' : 'center',
+              opacity: active ? 1 : 0.55,
+            }}>
+              <div style={{ fontSize: active ? 28 : 22, fontWeight: 700,
+                color: active ? TC.ink : TC.inkFaint }}>
+                {dose.label}
+              </div>
+              {active && (
+                <div style={{ fontSize: 15, fontWeight: 700, color: TC.primary }}>
+                  {dose.hint}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <div style={{ marginTop: 22 }}>
@@ -1000,7 +1027,8 @@ const S_DoseSheet = () => (
       </div>
     </div>
   </Shell>
-);
+  );
+};
 
 const S_AnalyzeLoading = ({ kind = "supp" }) => {
   const headline = kind === "med"
