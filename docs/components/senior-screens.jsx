@@ -1159,7 +1159,69 @@ const S_AddChoice = ({ kind = "medication" }) => {
   );
 };
 
-const S_Camera = () => (
+const S_Camera = ({ state = "ready", kind = "medication" }) => {
+  const isSupplement = kind === "supplement";
+  if (state === "denied") {
+    return (
+      <Shell bg="#0d0a1a">
+        <div style={{ flex: 1, display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center", padding: "0 28px",
+          color: "#fff", textAlign: "center" }}>
+          <div style={{ width: 112, height: 112, borderRadius: 9999,
+            background: "rgba(255,255,255,0.12)", display: "flex",
+            alignItems: "center", justifyContent: "center", marginBottom: 28 }}>
+            <Ic name="camera" size={54} color="#fff" />
+          </div>
+          <h2 style={{ fontSize: 28, lineHeight: 1.25, margin: "0 0 14px",
+            fontWeight: 800 }}>
+            카메라 권한이<br />필요해요
+          </h2>
+          <p style={{ fontSize: 20, lineHeight: 1.55,
+            color: "rgba(255,255,255,0.82)", margin: 0 }}>
+            사진으로 등록하려면<br />한 번만 허용해 주세요
+          </p>
+        </div>
+        <div style={{ padding: "12px 24px 28px", display: "flex",
+          flexDirection: "column", gap: 10 }}>
+          <BigButton variant="solid">설정 열기</BigButton>
+          <BigButton variant="ghost" style={{ color: "#fff", minHeight: 56 }}>
+            다른 방법으로 등록
+          </BigButton>
+        </div>
+      </Shell>
+    );
+  }
+  if (state === "loading") {
+    return (
+      <Shell>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center", gap: 30,
+          padding: "0 28px", textAlign: "center" }}>
+          <div style={{ position: "relative", width: 156, height: 156 }}>
+            <div style={{ position: "absolute", inset: 0, borderRadius: 9999,
+              border: `4px solid ${TC.primaryFixedDim}` }} />
+            <div style={{ position: "absolute", inset: 18, borderRadius: 9999,
+              border: `5px solid ${TC.primary}`, borderTopColor: "transparent" }} />
+            <div style={{ position: "absolute", inset: 0, display: "flex",
+              alignItems: "center", justifyContent: "center" }}>
+              <Ic name="doc" size={52} color={TC.primary} />
+            </div>
+          </div>
+          <div>
+            <h2 style={{ fontSize: 28, lineHeight: 1.25,
+              fontWeight: 800, color: TC.ink, margin: "0 0 12px" }}>
+              사진을 읽고 있어요
+            </h2>
+            <p style={{ fontSize: 20, lineHeight: 1.55,
+              color: TC.inkVariant, margin: 0 }}>
+              처방 이름과 약 목록을<br />확인 화면으로 옮길게요
+            </p>
+          </div>
+        </div>
+      </Shell>
+    );
+  }
+  return (
   <Shell bg="#0d0a1a">
     <div
       style={{
@@ -1180,7 +1242,9 @@ const S_Camera = () => (
         }}
       >
         <span style={{ fontSize: 28, lineHeight: 1 }}>×</span>
-        <span style={{ fontSize: 19, fontWeight: 700 }}>약봉투 촬영</span>
+        <span style={{ fontSize: 19, fontWeight: 700 }}>
+          {isSupplement ? "영양제 라벨 촬영" : "약봉투 촬영"}
+        </span>
         <span style={{ fontSize: 17, color: "#fff", fontWeight: 700 }}>
           도움
         </span>
@@ -1288,7 +1352,7 @@ const S_Camera = () => (
             letterSpacing: -0.3,
           }}
         >
-          약봉투를 사각형 안에
+          {isSupplement ? "라벨을 사각형 안에" : "약봉투를 사각형 안에"}
           <br />
           맞춰주세요
         </div>
@@ -1324,7 +1388,8 @@ const S_Camera = () => (
       </div>
     </div>
   </Shell>
-);
+  );
+};
 
 const S_Confirm = () => (
   <Shell>
@@ -1335,7 +1400,7 @@ const S_Confirm = () => (
       </Pill>
       <p
         style={{
-          fontSize: 17,
+          fontSize: 20,
           color: TC.inkVariant,
           marginTop: 12,
           lineHeight: 1.45,
@@ -1399,6 +1464,11 @@ const S_Confirm = () => (
               OO약국 조제 · 5월 2일 · 박○숙 님 · 약 3가지
             </div>
           </div>
+          <div style={{ fontSize: 15, fontWeight: 800, color: TC.primary,
+            background: TC.surfaceLowest, padding: "7px 10px",
+            borderRadius: 9999 }}>
+            수정 가능
+          </div>
         </div>
 
         {[
@@ -1444,9 +1514,29 @@ const S_Confirm = () => (
               </div>
               <Pill tone="warning">{m.when}</Pill>
             </div>
-            <Ic name="chev" size={20} color={TC.inkFaint} />
+            <div style={{ display: "flex", alignItems: "center", gap: 4,
+              color: TC.primary, fontSize: 15, fontWeight: 800 }}>
+              수정
+              <Ic name="chev" size={18} color={TC.primary} />
+            </div>
           </div>
         ))}
+      </Card>
+      <Card raised={false} style={{ marginTop: 14, background: TC.primaryFixed,
+        border: `1px solid ${TC.primaryFixedDim}` }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <Ic name="check-c" size={28} color={TC.primary} />
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: TC.ink,
+              marginBottom: 4 }}>
+              저장 요청 준비 완료
+            </div>
+            <div style={{ fontSize: 17, lineHeight: 1.45,
+              color: TC.onPrimaryVar, fontWeight: 600 }}>
+              처방 1건과 약 3개를 임시 상태에 보관했어요
+            </div>
+          </div>
+        </div>
       </Card>
     </div>
 
