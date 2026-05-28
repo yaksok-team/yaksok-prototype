@@ -674,7 +674,27 @@ const S_Welcome = () => {
   );
 };
 
-const S_AddType = () => (
+const S_AddType = ({ selected = null }) => {
+  const options = [
+    {
+      key: "supplement",
+      label: "영양제",
+      icon: <Capsule size={56} />,
+    },
+    {
+      key: "medication",
+      label: "복용의약품",
+      icon: (
+        <div style={{ width: 64, height: 64, borderRadius: 18,
+          background: TC.primary,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 8px 18px rgba(95,58,221,0.32)' }}>
+          <Ic name="plus" size={36} color="#fff" />
+        </div>
+      ),
+    },
+  ];
+  return (
   <Shell>
     <div style={{ position: 'absolute', inset: 0, background: TC.surfaceLow }} />
     <div style={{ position: 'absolute', inset: 0,
@@ -687,44 +707,53 @@ const S_AddType = () => (
       boxShadow: '0 30px 80px rgba(13,10,26,0.32)',
     }}>
       <h2 style={{ fontSize: 24, fontWeight: 700, letterSpacing: -0.4,
-        textAlign: 'center', margin: '0 0 28px', color: TC.ink,
+        textAlign: 'center', margin: '0 0 12px', color: TC.ink,
         lineHeight: 1.3 }}>
         무엇을 추가하시나요?
       </h2>
+      <div style={{ textAlign: 'center', marginBottom: 24 }}>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '8px 14px', borderRadius: 9999,
+          background: TC.primaryFixed, color: TC.onPrimaryVar,
+          fontSize: 15, fontWeight: 700,
+        }}>
+          내 약 탭 안에서 등록을 이어갑니다
+        </span>
+      </div>
 
       <div style={{ display: 'flex', gap: 14, justifyContent: 'center' }}>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column',
-          alignItems: 'center', gap: 14, padding: '12px 6px' }}>
-          <div style={{ width: 100, height: 100, borderRadius: 9999,
-            background: TC.primaryFixed,
-            display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Capsule size={56} />
-          </div>
-          <div style={{ fontSize: 19, fontWeight: 700, color: TC.ink }}>
-            영양제
-          </div>
-        </div>
-
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column',
-          alignItems: 'center', gap: 14, padding: '12px 6px' }}>
-          <div style={{ width: 100, height: 100, borderRadius: 9999,
-            background: TC.primaryFixed,
-            display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ width: 64, height: 64, borderRadius: 18,
-              background: TC.primary,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 8px 18px rgba(95,58,221,0.32)' }}>
-              <Ic name="plus" size={36} color="#fff" />
+        {options.map((opt) => {
+          const isSelected = selected === opt.key;
+          return (
+            <div key={opt.key} style={{ flex: 1, display: 'flex', flexDirection: 'column',
+              alignItems: 'center', gap: 14, padding: '14px 6px 12px',
+              borderRadius: 22,
+              background: isSelected ? TC.primaryFixed : 'transparent',
+              outline: isSelected ? `2px solid ${TC.primary}` : 'none',
+              outlineOffset: -2 }}>
+              <div style={{ width: 100, height: 100, borderRadius: 9999,
+                background: isSelected ? TC.surfaceLowest : TC.primaryFixed,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: isSelected ? TC.shadow : 'none' }}>
+                {opt.icon}
+              </div>
+              <div style={{ fontSize: 19, fontWeight: 700, color: TC.ink }}>
+                {opt.label}
+              </div>
+              {isSelected && (
+                <div style={{ fontSize: 14, fontWeight: 700, color: TC.primary }}>
+                  선택됨
+                </div>
+              )}
             </div>
-          </div>
-          <div style={{ fontSize: 19, fontWeight: 700, color: TC.ink }}>
-            복용의약품
-          </div>
-        </div>
+          );
+        })}
       </div>
     </div>
   </Shell>
-);
+  );
+};
 
 const S_SearchConfirm = () => (
   <Shell>
@@ -1000,16 +1029,19 @@ const S_AnalyzeLoading = ({ kind = "supp" }) => {
   );
 };
 
-const S_AddChoice = () => (
+const S_AddChoice = ({ kind = "medication" }) => {
+  const kindLabel = kind === "supplement" ? "영양제" : "복용의약품";
+  return (
   <Shell>
     <TopBar title="" left="" right="" />
     <div style={{ padding: "8px 24px 28px" }}>
+      <Pill tone="primary" big>{kindLabel} 등록 중</Pill>
       <h2
         style={{
           fontSize: 30,
           fontWeight: 700,
           letterSpacing: -0.5,
-          margin: "0 0 12px",
+          margin: "18px 0 12px",
           lineHeight: 1.2,
         }}
       >
@@ -1026,6 +1058,14 @@ const S_AddChoice = () => (
         }}
       >
         사진이나 이름으로 빠르게 찾을 수 있어요
+      </p>
+      <p style={{
+        fontSize: 20,
+        color: TC.inkVariant,
+        lineHeight: 1.45,
+        margin: "10px 0 0",
+      }}>
+        중간에 닫으면 지금 입력 중인 내용만 정리돼요
       </p>
     </div>
     <div
@@ -1116,7 +1156,8 @@ const S_AddChoice = () => (
       ))}
     </div>
   </Shell>
-);
+  );
+};
 
 const S_Camera = () => (
   <Shell bg="#0d0a1a">
