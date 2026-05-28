@@ -351,7 +351,7 @@ const flows = {
       comp: () => <Y.S_RegDone state="saving" /> },
     { title: '저장 실패',        desc: '같은 내용 재시도',             time: '9:48',
       comp: () => <Y.S_RegDone state="error" /> },
-    { title: '등록 완료',        desc: '저장 완료 — 오늘 약속·약통 진입', time: '9:48', comp: Y.S_RegDone },
+    { title: '등록 완료',        desc: '오늘·약통 재조회 후 스택 정리', time: '9:48', comp: Y.S_RegDone },
   ],
   s_mymeds_reg_supp: [
     { title: '분기 (모달)',      desc: '영양제 임시 등록 시작',        time: '14:15',
@@ -378,7 +378,7 @@ const flows = {
       comp: () => <Y.S_RegDone state="saving" /> },
     { title: '저장 실패',        desc: '같은 내용 재시도',             time: '14:31',
       comp: () => <Y.S_RegDone state="error" /> },
-    { title: '등록 완료',        desc: '저장 완료 — 오늘 약속·약통 진입', time: '14:31', comp: Y.S_RegDone },
+    { title: '등록 완료',        desc: '오늘·약통 재조회 후 스택 정리', time: '14:31', comp: Y.S_RegDone },
   ],
 
   // ZONE 2 · SENIOR MAIN — Tab 3 · 내 정보 + ZONE 3 · CAREGIVER (단일 화면 모음)

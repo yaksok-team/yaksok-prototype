@@ -2765,7 +2765,7 @@ const S_RegDone = ({ state = "done" }) => {
     ? "중복 저장을 막으면서\n약통에 보내고 있어요"
     : isError
       ? "입력한 내용은 그대로 두고\n다시 시도할 수 있어요"
-      : "오늘 약속에서 바로\n드시면 돼요";
+      : "오늘 약속과 약통을\n새로 불러왔어요";
   return (
   <Shell>
     <div
@@ -2848,6 +2848,20 @@ const S_RegDone = ({ state = "done" }) => {
             {isError
               ? "재시도해도 같은 약이 두 번 생기지 않게 처리합니다"
               : "저장 버튼을 다시 눌러도 같은 요청으로 묶습니다"}
+          </div>
+        </Card>
+      )}
+      {!isSaving && !isError && (
+        <Card raised={false} style={{ width: "100%",
+          background: TC.primaryFixed,
+          border: `1px solid ${TC.primaryFixedDim}` }}>
+          <div style={{ fontSize: 20, fontWeight: 800,
+            color: TC.onPrimaryVar, marginBottom: 6 }}>
+            완료 화면에서 새로 시작합니다
+          </div>
+          <div style={{ fontSize: 17, lineHeight: 1.45,
+            color: TC.onPrimaryVar, fontWeight: 600 }}>
+            뒤로가도 등록 전 화면으로 돌아가지 않게 정리했어요
           </div>
         </Card>
       )}
